@@ -1,0 +1,46 @@
+{
+  "author": "adrai",
+  "name": "cqrs-saga",
+  "version": "1.0.0",
+  "private": false,
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "description": "Node-cqrs-saga is a node.js module that helps to implement the sagas in cqrs. It can be very useful as domain component if you work with (d)ddd, cqrs, eventdenormalizer, host, etc.",
+  "keywords": [
+    "cqrs",
+    "saga",
+    "eventsourcing",
+    "ddd",
+    "dddd",
+    "command",
+    "event",
+    "eventdenormalizer",
+    "domain"
+  ],
+  "homepage": "https://github.com/adrai/node-cqrs-saga",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:adrai/node-cqrs-saga.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adrai/node-cqrs-saga/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/adrai/node-cqrs-saga/master/licence"
+    }
+  ],
+  "scripts": {
+    "test": "mocha test/unit && mocha test/integration"
+  }
+}
