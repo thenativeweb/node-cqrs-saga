@@ -44,3 +44,19 @@ processManagement.init(function(err) {
 processManagement.handle({ id: 'msgId', event: 'dummyCreated', payload: { id: '23445' } }, function (err, cmds) { // optional callback
   // event is handled, cmds is result
 });
+
+processManagement.getTimeoutedSagas(function (err, sagas) {
+
+  sagas.forEach(function (saga) {
+    // saga.id...
+    // saga.timoutsAt...
+    // saga.timoutCommands...
+    
+
+    // if saga does not clean itself after timouted, or no commands are defined, then:
+    processManagement.destroySaga(saga || saga.id, function (err) {});
+
+  });
+
+});
+
