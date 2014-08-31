@@ -45,8 +45,34 @@ module.exports = require('cqrs-saga').defineSagaStart({// event to match...
         'aggregate.name': 'reservaion',
         'context.name': 'sale',
         'payload.transactionId': saga.id
+      },
+      {
+        'name': 'orderCancelled',
+        'aggregate.name': 'order',
+        'context.name': 'sale',
+        'payload.transactionId': saga.id
       }
     ]);
+
+    // timeout stuff  (optional)
+    var tomorrow = new Date();
+    tomorrow.setDate((new Date()).getDate() + 1); 
+    var timeoutCmd = {
+      // id: 'my onwn command id', // if you don't pass an id it will generate one, when emitting the command...
+      name: 'cancelOrder',
+      aggregate: {
+        name: 'order',
+        id: evt.aggregate.id
+      },
+      context: {
+        name: 'sale'
+      },
+      payload: {
+        transactionId: saga.id
+      },
+      meta: evt.meta // to transport userId...
+    };
+    saga.defineTimeout(tomorrow, [timeoutCmd]);
 
     saga.commit(callback);
   });
@@ -97,8 +123,34 @@ module.exports = require('cqrs-saga').defineSagaStart({// event to match...
       'aggregate.name': 'reservaion',
       'context.name': 'sale',
       'payload.transactionId': saga.id
+    },
+    {
+      'name': 'orderCancelled',
+      'aggregate.name': 'order',
+      'context.name': 'sale',
+      'payload.transactionId': saga.id
     }
   ]);
+
+  // timeout stuff  (optional)
+  var tomorrow = new Date();
+  tomorrow.setDate((new Date()).getDate() + 1); 
+  var timeoutCmd = {
+    // id: 'my onwn command id', // if you don't pass an id it will generate one, when emitting the command...
+    name: 'cancelOrder',
+    aggregate: {
+      name: 'order',
+      id: evt.aggregate.id
+    },
+    context: {
+      name: 'sale'
+    },
+    payload: {
+      transactionId: saga.id
+    },
+    meta: evt.meta // to transport userId...
+  };
+  saga.defineTimeout(tomorrow, [timeoutCmd]);
 
   saga.commit(callback);
 });
