@@ -1,8 +1,8 @@
 // if exports is an array, it will be the same like loading multiple files...
 module.exports = require('cqrs-saga').defineSagaStep({// event to match...
   'name': 'seatsReserved',
-  'aggregate.name': 'reservaion',
-  'context.name': 'sale'
+  'aggregate': 'reservaion',
+  'context': 'sale'
 }, { // optional settings
   containingProperties: ['payload.transactionId']
   // payload: 'payload' // if not defined it will pass the whole event...
@@ -49,8 +49,8 @@ module.exports = require('cqrs-saga').defineSagaStep({// event to match...
 // if exports is an array, it will be the same like loading multiple files...
 module.exports = require('cqrs-saga').defineSagaStep({// event to match...
   'name': 'seatsReserved',
-  'aggregate.name': 'reservaion',
-  'context.name': 'sale'
+  'aggregate': 'reservaion',
+  'context': 'sale'
 }, { // optional settings
   containingProperties: ['payload.transactionId'],
   loadBy: 'payload.transactionId'
