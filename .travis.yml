@@ -1,0 +1,19 @@
+# before_script: "npm install"
+
+services:
+  - redis-server
+  - mongodb
+  - couchdb
+
+language: node_js
+node_js:
+  - 0.8
+  - 0.10
+
+branches:
+  only:
+    - master
+
+notifications:
+  email:
+    - adriano@raiano.ch
