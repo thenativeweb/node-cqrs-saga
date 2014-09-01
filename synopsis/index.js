@@ -60,3 +60,19 @@ processManagement.getTimeoutedSagas(function (err, sagas) {
 
 });
 
+processManagement.getOlderSagas(new Date(2014, 3, 17), function (err, sagas) {
+
+  sagas.forEach(function (saga) {
+    // saga.id...
+    // saga.timoutsAt...
+    // saga.timoutCommands...
+
+
+    // if saga does not clean itself after timouted, or no commands are defined, then:
+    processManagement.destroySaga(saga || saga.id, function (err) {});
+
+  });
+
+});
+
+
