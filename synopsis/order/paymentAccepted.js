@@ -2,7 +2,8 @@
 module.exports = require('cqrs-saga').defineSagaStep({// event to match...
   'name': 'paymentAccepted',
   'aggregate': 'payment',
-  'context': 'sale'
+  'context': 'sale',
+  'version': 2 // default is 0
 }, { // optional settings
   containingProperties: ['payload.transactionId']
   // payload: 'payload' // if not defined it will pass the whole event...
@@ -52,7 +53,8 @@ module.exports = require('cqrs-saga').defineSagaStep({// event to match...
 module.exports = require('cqrs-saga').defineSagaStep({// event to match...
   'name': 'paymentAccepted',
   'aggregate': 'payment',
-  'context': 'sale'
+  'context': 'sale',
+  'version': 2 // default is 0
 }, { // optional settings
   containingProperties: ['payload.transactionId'],
   loadBy: 'payload.transactionId'
