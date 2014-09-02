@@ -1,5 +1,5 @@
 var processManagement = require('cqrs-saga')({
-  sagaPath: __dirname + '/',
+  sagaPath: __dirname + '/'
 });
 
 processManagement.defineCommand({
@@ -41,7 +41,7 @@ processManagement.init(function(err) {
 
 // ...
 
-processManagement.handle({ id: 'msgId', event: 'dummyCreated', payload: { id: '23445' } }, function (err, cmds) { // optional callback
+processManagement.handle({ id: 'msgId', event: 'dummyCreated', payload: { id: '23445' } }, function (err, cmds, sagaData) { // optional callback
   // event is handled, cmds is result
 });
 
