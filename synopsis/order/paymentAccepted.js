@@ -5,64 +5,13 @@ module.exports = require('cqrs-saga').defineSagaStep({// event to match...
   'context': 'sale',
   'version': 2 // default is 0
 }, { // optional settings
-  containingProperties: ['payload.transactionId']
-  // payload: 'payload' // if not defined it will pass the whole event...
-}, function (evt, sagaHandler, callback) {
-
-  sagaHandler.get(evt.payload.transactionId, function (err, saga) {
-    if (err) {
-      return callback(err);
-    }
-
-    var cmd = {
-      // id: 'my onwn command id', // if you don't pass an id it will generate one, when emitting the command...
-      name: 'confirmOrder',
-      aggregate: {
-        name: 'order',
-        id: saga.get('orderId')
-      },
-      context: {
-        name: 'sale'
-      },
-      payload: {
-        transactionId: saga.id
-      },
-      meta: evt.meta // to transport userId...
-    };
-
-    saga.send(cmd);
-
-    saga.next([
-      {
-        'name': 'orderConfirmed',
-        'aggregate.name': 'order',
-        'aggregate.id': saga.get('orderId'),
-        'context.name': 'sale',
-        'payload.transactionId': saga.id
-      }
-    ]);
-
-    saga.commit(callback);
-  });
-
-});
-
-
-// or
-// if exports is an array, it will be the same like loading multiple files...
-module.exports = require('cqrs-saga').defineSagaStep({// event to match...
-  'name': 'paymentAccepted',
-  'aggregate': 'payment',
-  'context': 'sale',
-  'version': 2 // default is 0
-}, { // optional settings
   containingProperties: ['payload.transactionId'],
-  loadBy: 'payload.transactionId'
+  id: 'payload.transactionId'
   // payload: 'payload' // if not defined it will pass the whole event...
 }, function (evt, saga, callback) {
 
   var cmd = {
-    // id: 'my onwn command id', // if you don't pass an id it will generate one, when emitting the command...
+    // id: 'my own command id', // if you don't pass an id it will generate one, when emitting the command...
     name: 'confirmOrder',
     aggregate: {
       name: 'order',
@@ -74,20 +23,10 @@ module.exports = require('cqrs-saga').defineSagaStep({// event to match...
     payload: {
       transactionId: saga.id
     },
-    meta: evt.meta // to transport userId...
+    meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
   };
 
-  saga.send(cmd);
-
-  saga.next([
-    {
-      'name': 'orderConfirmed',
-      'aggregate.name': 'order',
-      'aggregate.id': saga.get('orderId'),
-      'context.name': 'sale',
-      'payload.transactionId': saga.id
-    }
-  ]);
+  saga.defineCommandToSend(cmd);
 
   saga.commit(callback);
 });

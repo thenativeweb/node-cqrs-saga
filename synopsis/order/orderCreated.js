@@ -1,93 +1,11 @@
 // if exports is an array, it will be the same like loading multiple files...
 module.exports = require('cqrs-saga').defineSagaStart({// event to match...
-  'name': 'orderCreated'
+  'name': 'orderCreated',
+  'aggregate': 'order',
+  'context': 'sale'
 }, { // optional settings
   // payload: 'payload' // if not defined it will pass the whole event...
-  // useAsId: 'aggregate.id' // if not defined it will generate an id
-}, function (evt, sagaHandler, callback) {
-
-  sagaHandler.get(function (err, saga) {
-    if (err) {
-      return callback(err);
-    }
-
-    // saga.id or saga.get('id') is a generated id...
-
-    saga.set('orderId', evt.aggregate.id);
-    saga.set('totalCosts', evt.payload.totalCosts);
-
-    var cmd = {
-      // id: 'my onwn command id', // if you don't pass an id it will generate one, when emitting the command...
-      name: 'makeReservation',
-      aggregate: {
-        name: 'reservaion'
-      },
-      context: {
-        name: 'sale'
-      },
-      payload: {
-        transactionId: saga.id,
-        seats: evt.payload.seats
-      },
-      meta: evt.meta // to transport userId...
-    };
-
-    saga.send(cmd);
-
-    saga.next([
-      {
-        'name': 'seatsReserved',
-        'aggregate.name': 'reservaion',
-        'context.name': 'sale',
-        'payload.transactionId': saga.id
-      },
-      {
-        'name': 'seatsNotReserved',
-        'aggregate.name': 'reservaion',
-        'context.name': 'sale',
-        'payload.transactionId': saga.id
-      },
-      {
-        'name': 'orderCancelled',
-        'aggregate.name': 'order',
-        'context.name': 'sale',
-        'payload.transactionId': saga.id
-      }
-    ]);
-
-    // timeout stuff  (optional)
-    var tomorrow = new Date();
-    tomorrow.setDate((new Date()).getDate() + 1); 
-    var timeoutCmd = {
-      // id: 'my onwn command id', // if you don't pass an id it will generate one, when emitting the command...
-      name: 'cancelOrder',
-      aggregate: {
-        name: 'order',
-        id: evt.aggregate.id
-      },
-      context: {
-        name: 'sale'
-      },
-      payload: {
-        transactionId: saga.id
-      },
-      meta: evt.meta // to transport userId...
-    };
-    saga.defineTimeout(tomorrow, [timeoutCmd]);
-
-    saga.commit(callback);
-  });
-
-});
-
-// or
-// if exports is an array, it will be the same like loading multiple files...
-module.exports = require('cqrs-saga').defineSagaStart({// event to match...
-  'name': 'orderCreated'
-}, { // optional settings
-  loadBy: null
-  // payload: 'payload' // if not defined it will pass the whole event...
-  // useAsId: 'aggregate.id' // if not defined it will generate an id
+  // id: 'aggregate.id' // if not defined it will generate an id
 }, function (evt, saga, callback) {
 
   // saga.id or saga.get('id') is a generated id...
@@ -96,10 +14,10 @@ module.exports = require('cqrs-saga').defineSagaStart({// event to match...
   saga.set('totalCosts', evt.payload.totalCosts);
 
   var cmd = {
-    // id: 'my onwn command id', // if you don't pass an id it will generate one, when emitting the command...
+    // id: 'my own command id', // if you don't pass an id it will generate one, when emitting the command...
     name: 'makeReservation',
     aggregate: {
-      name: 'reservaion'
+      name: 'reservation'
     },
     context: {
       name: 'sale'
@@ -108,37 +26,16 @@ module.exports = require('cqrs-saga').defineSagaStart({// event to match...
       transactionId: saga.id,
       seats: evt.payload.seats
     },
-    meta: evt.meta // to transport userId...
+    meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
   };
 
-  saga.send(cmd);
-
-  saga.next([
-    {
-      'name': 'seatsReserved',
-      'aggregate.name': 'reservaion',
-      'context.name': 'sale',
-      'payload.transactionId': saga.id
-    },
-    {
-      'name': 'seatsNotReserved',
-      'aggregate.name': 'reservaion',
-      'context.name': 'sale',
-      'payload.transactionId': saga.id
-    },
-    {
-      'name': 'orderCancelled',
-      'aggregate.name': 'order',
-      'context.name': 'sale',
-      'payload.transactionId': saga.id
-    }
-  ]);
+  saga.defineCommandToSend(cmd);
 
   // timeout stuff  (optional)
   var tomorrow = new Date();
   tomorrow.setDate((new Date()).getDate() + 1); 
   var timeoutCmd = {
-    // id: 'my onwn command id', // if you don't pass an id it will generate one, when emitting the command...
+    // id: 'my own command id', // if you don't pass an id it will generate one, when emitting the command...
     name: 'cancelOrder',
     aggregate: {
       name: 'order',
@@ -150,9 +47,9 @@ module.exports = require('cqrs-saga').defineSagaStart({// event to match...
     payload: {
       transactionId: saga.id
     },
-    meta: evt.meta // to transport userId...
+    meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
   };
-  saga.defineTimeout(tomorrow, [timeoutCmd]);
+  saga.defineTimeout(tomorrow, [timeoutCmd]); // pass in array of commands or a command object
 
   saga.commit(callback);
 });
