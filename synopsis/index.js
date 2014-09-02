@@ -41,7 +41,7 @@ processManagement.init(function(err) {
 
 // ...
 
-processManagement.handle({ id: 'msgId', event: 'dummyCreated', payload: { id: '23445' } }, function (err, cmds, sagaData) { // optional callback
+processManagement.handle({ id: 'msgId', event: 'dummyCreated', payload: { id: '23445' } }, function (err, cmds) { // optional callback
   // event is handled, cmds is result
 });
 
