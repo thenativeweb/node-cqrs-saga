@@ -1,10 +1,9 @@
 // if exports is an array, it will be the same like loading multiple files...
 module.exports = require('cqrs-saga').defineSagaStep({// event to match...
-  'name': 'paymentAccepted',
-  'aggregate': 'payment',
-  'context': 'sale',
-  'version': 2 // default is 0
-}, { // optional settings
+  name: 'paymentAccepted',
+  aggregate: 'payment',
+  context: 'sale',
+  version: 2, // default is 0
   containingProperties: ['payload.transactionId'],
   id: 'payload.transactionId'
   // payload: 'payload' // if not defined it will pass the whole event...
@@ -26,7 +25,7 @@ module.exports = require('cqrs-saga').defineSagaStep({// event to match...
     meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
   };
 
-  saga.defineCommandToSend(cmd);
+  saga.addCommandToSend(cmd);
 
   saga.commit(callback);
 });

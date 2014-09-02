@@ -1,9 +1,8 @@
 // if exports is an array, it will be the same like loading multiple files...
 module.exports = require('cqrs-saga').defineSagaStart({// event to match...
-  'name': 'orderCreated',
-  'aggregate': 'order',
-  'context': 'sale'
-}, { // optional settings
+  name: 'orderCreated',
+  aggregate: 'order',
+  context: 'sale'
   // payload: 'payload' // if not defined it will pass the whole event...
   // id: 'aggregate.id' // if not defined it will generate an id
 }, function (evt, saga, callback) {
@@ -29,7 +28,7 @@ module.exports = require('cqrs-saga').defineSagaStart({// event to match...
     meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
   };
 
-  saga.defineCommandToSend(cmd);
+  saga.addCommandToSend(cmd);
 
   // timeout stuff  (optional)
   var tomorrow = new Date();
