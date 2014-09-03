@@ -53,7 +53,7 @@ processManagement.getTimeoutedSagas(function (err, sagas) {
     // saga._timoutCommands...
     
 
-    // if saga does not clean itself after timouted, or no commands are defined, then:
+    // if saga does not clean itself after timeouted, or no commands are defined, then:
     processManagement.destroySaga(saga || saga.id, function (err) {});
 
   });
