@@ -231,117 +231,242 @@ describe('SagaStore', function() {
                   });
 
                 });
-                
-                
+
+                describe('calling getUndispatchedCommands', function() {
+
+                  it('it should callback with an empty array', function(done) {
+
+                    store.getUndispatchedCommands(function(err, cmds) {
+                      expect(err).not.to.be.ok();
+                      expect(cmds).to.be.an('array');
+                      expect(cmds).to.have.length(0);
+                      done();
+                    });
+
+                  });
+
+                });
+
+                describe('calling getOlderSagas', function() {
+                  
+                  describe('without a valid date object', function () {
+                    
+                    it('it should callback with an error', function (done) {
+
+                      store.getOlderSagas({}, function(err, sagas) {
+                        expect(err).to.be.ok();
+                        expect(err.message).to.match(/date/);
+                        expect(sagas).not.to.be.ok();
+                        done();
+                      });
+                      
+                    });
+                    
+                  });
+
+                  describe('with a valid date object', function () {
+
+                    it('it should callback without an error', function (done) {
+
+                      store.getOlderSagas(new Date(), function(err, sagas) {
+                        expect(err).not.to.be.ok();
+                        expect(sagas).to.be.an('array');
+                        expect(sagas).to.have.length(0);
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                });
+
+                describe('calling get', function() {
+
+                  describe('without a valid id', function () {
+
+                    it('it should callback with an error', function (done) {
+
+                      store.get({}, function(err) {
+                        expect(err).to.be.ok();
+                        expect(err.message).to.match(/id/);
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                  describe('with a valid id', function () {
+
+                    it('it should callback without an error', function (done) {
+
+                      store.get('123', function(err) {
+                        expect(err).not.to.be.ok();
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                });
+
+                describe('calling remove', function() {
+
+                  describe('without a valid id object', function () {
+
+                    it('it should callback with an error', function (done) {
+
+                      store.remove({}, function(err) {
+                        expect(err).to.be.ok();
+                        expect(err.message).to.match(/id/);
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                  describe('with a valid date object', function () {
+
+                    it('it should callback without an error', function (done) {
+
+                      store.getOlderSagas(new Date(), function(err) {
+                        expect(err).not.to.be.ok();
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                });
+
+                describe('calling save', function() {
+
+                  describe('without a valid saga object', function () {
+
+                    it('it should callback with an error', function (done) {
+
+                      store.save({}, true, function(err) {
+                        expect(err).to.be.ok();
+                        expect(err.message).to.match(/id/);
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                  describe('without a valid commands object', function () {
+
+                    it('it should callback with an error', function (done) {
+
+                      store.save({ id: '1234', _commitStamp: new Date() }, [{}], function(err) {
+                        expect(err).to.be.ok();
+                        expect(err.message).to.match(/command/);
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                  describe('with valid arguments', function () {
+
+                    it('it should callback without an error', function (done) {
+
+                      store.save({ id: '1234', _commitStamp: new Date() }, [{ id: '234' }], function(err) {
+                        expect(err).not.to.be.ok();
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                });
+
+                describe('calling setCommandToDispatched', function() {
+
+                  describe('without a valid commandId', function () {
+
+                    it('it should callback with an error', function (done) {
+
+                      store.setCommandToDispatched({}, true, function(err) {
+                        expect(err).to.be.ok();
+                        expect(err.message).to.match(/command id/);
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                  describe('without a valid sagaId', function () {
+
+                    it('it should callback with an error', function (done) {
+
+                      store.setCommandToDispatched('123', true, function(err) {
+                        expect(err).to.be.ok();
+                        expect(err.message).to.match(/saga id/);
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                  describe('with valid arguments', function () {
+
+                    it('it should callback without an error', function (done) {
+
+                      store.setCommandToDispatched('1234', '4356', function(err) {
+                        expect(err).not.to.be.ok();
+                        done();
+                      });
+
+                    });
+
+                  });
+
+                });
 
               });
 
-//              describe('having 3 reservations for an aggregate and 2 reservations with an other aggregate', function() {
-//
-//                beforeEach(function (done) {
-//                  lock.clear(function () {
-//                    async.series([
-//                      function (callback) {
-//                        setTimeout(function () {
-//                          lock.reserve('workerId111', 'aggregateId111', callback);
-//                        }, 1);
-//                      },
-//                      function (callback) {
-//                        setTimeout(function () {
-//                          lock.reserve('workerId222', 'aggregateId111', callback);
-//                        }, 2);
-//                      },
-//                      function (callback) {
-//                        setTimeout(function () {
-//                          lock.reserve('workerId333', 'aggregateId111', callback);
-//                        }, 3);
-//                      },
-//                      function (callback) {
-//                        setTimeout(function () {
-//                          lock.reserve('workerIdFirst', 'aggregateIdSecond', callback);
-//                        }, 4);
-//                      },
-//                      function (callback) {
-//                        setTimeout(function () {
-//                          lock.reserve('workerIdSecond', 'aggregateIdSecond', callback);
-//                        }, 5);
-//                      }
-//                    ], done);
-//                  });
-//                });
-//
-//                describe('calling getAll of the first aggregate', function () {
-//
-//                  it('it should callback with the correct amount of workers', function (done) {
-//
-//                    lock.getAll('aggregateId111', function (err, workerIds) {
-//                      expect(err).not.to.be.ok();
-//                      expect(workerIds).to.be.an('array');
-//                      expect(workerIds.length).to.eql(3);
-//                      expect(workerIds[0]).to.eql('workerId111');
-//                      expect(workerIds[1]).to.eql('workerId222');
-//                      expect(workerIds[2]).to.eql('workerId333');
-//                      done();
-//                    });
-//                  });
-//
-//                });
-//
-//                describe('calling getAll of the second aggregate', function () {
-//
-//                  it('it should callback with the correct amount of workers', function (done) {
-//
-//                    lock.getAll('aggregateIdSecond', function (err, workerIds) {
-//                      expect(err).not.to.be.ok();
-//                      expect(workerIds).to.be.an('array');
-//                      expect(workerIds.length).to.eql(2);
-//                      expect(workerIds[0]).to.eql('workerIdFirst');
-//                      expect(workerIds[1]).to.eql('workerIdSecond');
-//                      done();
-//                    });
-//                  });
-//
-//                });
-//
-//                describe('calling resolve of the first aggregate', function() {
-//
-//                  it('it should have removed all reservation for this aggregate', function (done) {
-//
-//                    lock.resolve('aggregateId111', function (err, nothing) {
-//                      expect(err).not.to.be.ok();
-//                      expect(nothing).to.eql(undefined);
-//
-//                      lock.getAll('aggregateId111', function (err, workerIds) {
-//                        expect(err).not.to.be.ok();
-//                        expect(workerIds).to.be.an('array');
-//                        expect(workerIds.length).to.eql(0);
-//                        done();
-//                      })
-//                    })
-//
-//                  });
-//
-//                  it('it should not have removed any reservation for the other aggregate', function (done) {
-//
-//                    lock.resolve('aggregateId111', function (err, nothing) {
-//                      expect(err).not.to.be.ok();
-//                      expect(nothing).to.eql(undefined);
-//
-//                      lock.getAll('aggregateIdSecond', function (err, workerIds) {
-//                        expect(err).not.to.be.ok();
-//                        expect(workerIds).to.be.an('array');
-//                        expect(workerIds.length).to.eql(2);
-//                        expect(workerIds[0]).to.eql('workerIdFirst');
-//                        expect(workerIds[1]).to.eql('workerIdSecond');
-//                        done();
-//                      })
-//                    })
-//
-//                  });
-//
-//                });
-//
-//              });
+              describe('having some saved sagas', function() {
+
+                beforeEach(function (done) {
+                  store.clear(function () {
+                    async.series([
+                      function (callback) {
+                        setTimeout(function () {
+                          store.save({ id: 'sagaId1', _commitStamp: new Date(2014, 3, 1), _timeoutAt: new Date(2014, 3, 17), data: 'sagaData1' }, [{ id: 'cmdId1', data: 'cmdData1' }], callback);
+                        }, 1);
+                      },
+                      function (callback) {
+                        setTimeout(function () {
+                          store.save({ id: 'sagaId2', _commitStamp: new Date(2014, 3, 2), _timeoutAt: new Date(2014, 3, 15), data: 'sagaData2' }, [{ id: 'cmdId2', data: 'cmdData2' }, { id: 'cmdId22', data: 'cmdData22' }], callback);
+                        }, 1);
+                      },
+                      function (callback) {
+                        setTimeout(function () {
+                          store.save({ id: 'sagaId3', _commitStamp: new Date(2014, 3, 5), data: 'sagaData3' }, [{ id: 'cmdId3', data: 'cmdData3' }], callback);
+                        }, 1);
+                      },
+                      function (callback) {
+                        setTimeout(function () {
+                          store.save({ id: 'sagaId4', _commitStamp: new Date(2014, 3, 7), data: 'sagaData4' }, [], callback);
+                        }, 1);
+                      }
+                    ], done);
+                  });
+                });
+
+//                describe('calling ...');
+
+              });
 
             });
 
