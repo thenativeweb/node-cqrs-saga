@@ -56,7 +56,8 @@ describe('saga model', function () {
         expect(saga.getTimeoutAt).to.be.a('function');
         expect(saga.getTimeoutCommands).to.be.a('function');
         expect(saga.addUnsentCommand).to.be.a('function');
-        expect(saga.getUnsentCommands).to.be.a('function');
+        expect(saga.removeUnsentCommand).to.be.a('function');
+        expect(saga.getUndispatchedCommands).to.be.a('function');
 
         expect(saga.id).to.eql('1234');
         expect(saga.get('id')).to.eql('1234');
@@ -245,19 +246,27 @@ describe('saga model', function () {
       it('it should work as expected', function () {
         
         var saga = new SagaModel('1234');
-        var cmds = saga.getUnsentCommands();
+        var cmds = saga.getUndispatchedCommands();
         
         expect(cmds).to.be.an('array');
         expect(cmds.length).to.eql(0);
         
-        saga.addUnsentCommand({ id: '13334' });
+        var first = { id: '13334' };
+        saga.addUnsentCommand(first);
         saga.addUnsentCommand({ id: '22114' });
-        cmds = saga.getUnsentCommands();
+        cmds = saga.getUndispatchedCommands();
 
         expect(cmds).to.be.an('array');
         expect(cmds.length).to.eql(2);
         expect(cmds[0].id).to.eql('13334');
         expect(cmds[1].id).to.eql('22114');
+        
+        saga.removeUnsentCommand(first);
+        cmds = saga.getUndispatchedCommands();
+
+        expect(cmds).to.be.an('array');
+        expect(cmds.length).to.eql(1);
+        expect(cmds[0].id).to.eql('22114');
         
       });
       

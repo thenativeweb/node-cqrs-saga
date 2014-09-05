@@ -324,7 +324,7 @@ describe('saga definition', function () {
               saga.handle({ aggId: '5647', meta: 'evtMeta' }, function (err, sagaModel) {
                 expect(err).not.to.be.ok();
                 expect(sagaModel.id).to.eql('5647');
-                var cmds = sagaModel.getUnsentCommands();
+                var cmds = sagaModel.getUndispatchedCommands();
                 expect(cmds.length).to.eql(2);
                 expect(cmds[0].c).to.eql('data1');
                 expect(cmds[0].meta).to.eql('evtMeta');
@@ -558,7 +558,7 @@ describe('saga definition', function () {
                   var timeout = sagaModel.getTimeoutAt();
                   expect(timeout.getTime()).to.eql((new Date(2034, 8, 27)).getTime());
 
-                  var cmds = sagaModel.getUnsentCommands();
+                  var cmds = sagaModel.getUndispatchedCommands();
                   expect(cmds.length).to.eql(2);
                   expect(cmds[0].cS).to.eql('data1S');
                   expect(cmds[0].meta).to.eql('evtMeta');
