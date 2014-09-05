@@ -329,12 +329,12 @@ describe('SagaStore', function() {
 
                   });
 
-                  describe('with a valid date object', function () {
+                  describe('with a valid id string', function () {
 
                     it('it should callback without an error', function (done) {
 
-                      store.getOlderSagas(new Date(), function(err) {
-                      expect(err).not.to.be.ok();
+                      store.remove('123', function(err) {
+                        expect(err).not.to.be.ok();
                         done();
                       });
 
@@ -456,24 +456,16 @@ describe('SagaStore', function() {
                   store.clear(function () {
                     async.series([
                       function (callback) {
-                        setTimeout(function () {
-                          store.save(saga1, cmds1, callback);
-                        }, 1);
+                        store.save(saga1, cmds1, callback);
                       },
                       function (callback) {
-                        setTimeout(function () {
-                          store.save(saga2, cmds2, callback);
-                        }, 1);
+                        store.save(saga2, cmds2, callback);
                       },
                       function (callback) {
-                        setTimeout(function () {
-                          store.save(saga3, cmds3, callback);
-                        }, 1);
+                        store.save(saga3, cmds3, callback);
                       },
                       function (callback) {
-                        setTimeout(function () {
-                          store.save(saga4, cmds4, callback);
-                        }, 1);
+                        store.save(saga4, cmds4, callback);
                       }
                     ], done);
                   });
