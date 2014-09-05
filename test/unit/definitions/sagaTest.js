@@ -292,6 +292,332 @@ describe('saga definition', function () {
 
           });
 
+          describe('calling saga.addCommandToSend in the handle function', function () {
+
+            it('it should work as expected', function (done) {
+
+              var fnCalled = false;
+              var sagaFn = function (e, s, clb) {
+                expect(e.aggId).to.eql('5647');
+                expect(s.id).to.eql('5647');
+                s.addCommandToSend({ c: 'data1' });
+                s.addCommandToSend({ c: 'data2', meta: 'm' });
+                fnCalled = true;
+                clb(null);
+              };
+              saga = api.defineSaga({
+                name: 'eventName',
+                version: 3,
+                id: 'aggId'
+              }, sagaFn);
+              saga.defineCommand({
+                id: 'id',
+                meta: 'meta'
+              });
+              saga.defineEvent({
+                id: 'id',
+                meta: 'meta'
+              });
+
+              saga.useSagaStore(sagaStore);
+
+              saga.handle({ aggId: '5647', meta: 'evtMeta' }, function (err, sagaModel) {
+                expect(err).not.to.be.ok();
+                expect(sagaModel.id).to.eql('5647');
+                var cmds = sagaModel.getUnsentCommands();
+                expect(cmds.length).to.eql(2);
+                expect(cmds[0].c).to.eql('data1');
+                expect(cmds[0].meta).to.eql('evtMeta');
+                expect(cmds[1].c).to.eql('data2');
+                expect(cmds[1].meta).to.eql('m');
+                expect(fnCalled).to.eql(true);
+                done();
+              });
+            });
+
+          });
+
+          describe('calling saga.defineTimeout in the handle function', function () {
+
+            describe('without command', function () {
+
+              it('it should work as expected', function (done) {
+
+                var fnCalled = false;
+                var sagaFn = function (e, s, clb) {
+                  expect(e.aggId).to.eql('5647');
+                  expect(s.id).to.eql('5647');
+                  s.defineTimeout(new Date(2034, 8, 25));
+                  fnCalled = true;
+                  clb(null);
+                };
+                saga = api.defineSaga({
+                  name: 'eventName',
+                  version: 3,
+                  id: 'aggId'
+                }, sagaFn);
+                saga.defineCommand({
+                  id: 'id',
+                  meta: 'meta'
+                });
+                saga.defineEvent({
+                  id: 'id',
+                  meta: 'meta'
+                });
+
+                saga.useSagaStore(sagaStore);
+
+                saga.handle({ aggId: '5647', meta: 'evtMeta' }, function (err, sagaModel) {
+                  expect(err).not.to.be.ok();
+                  expect(sagaModel.id).to.eql('5647');
+                  var cmds = sagaModel.getTimeoutCommands();
+                  expect(cmds.length).to.eql(0);
+                  var timeout = sagaModel.getTimeoutAt();
+                  expect(timeout.getTime()).to.eql((new Date(2034, 8, 25)).getTime());
+                  expect(fnCalled).to.eql(true);
+                  done();
+                });
+              });
+              
+            });
+
+            describe('with one command', function () {
+
+              it('it should work as expected', function (done) {
+
+                var fnCalled = false;
+                var sagaFn = function (e, s, clb) {
+                  expect(e.aggId).to.eql('5647');
+                  expect(s.id).to.eql('5647');
+                  s.defineTimeout(new Date(2034, 8, 23), { c: 'data1' });
+                  fnCalled = true;
+                  clb(null);
+                };
+                saga = api.defineSaga({
+                  name: 'eventName',
+                  version: 3,
+                  id: 'aggId'
+                }, sagaFn);
+                saga.defineCommand({
+                  id: 'id',
+                  meta: 'meta'
+                });
+                saga.defineEvent({
+                  id: 'id',
+                  meta: 'meta'
+                });
+
+                saga.useSagaStore(sagaStore);
+
+                saga.handle({ aggId: '5647', meta: 'evtMeta' }, function (err, sagaModel) {
+                  expect(err).not.to.be.ok();
+                  expect(sagaModel.id).to.eql('5647');
+                  var cmds = sagaModel.getTimeoutCommands();
+                  expect(cmds.length).to.eql(1);
+                  expect(cmds[0].c).to.eql('data1');
+                  expect(cmds[0].meta).to.eql('evtMeta');
+                  var timeout = sagaModel.getTimeoutAt();
+                  expect(timeout.getTime()).to.eql((new Date(2034, 8, 23)).getTime());
+                  expect(fnCalled).to.eql(true);
+                  done();
+                });
+              });
+
+            });
+
+            describe('with mutliple commands', function () {
+
+              it('it should work as expected', function (done) {
+
+                var fnCalled = false;
+                var sagaFn = function (e, s, clb) {
+                  expect(e.aggId).to.eql('5647');
+                  expect(s.id).to.eql('5647');
+                  s.defineTimeout(new Date(2034, 8, 27), [{ c: 'data1' }, { c: 'data2', meta: 'm' }]);
+                  fnCalled = true;
+                  clb(null);
+                };
+                saga = api.defineSaga({
+                  name: 'eventName',
+                  version: 3,
+                  id: 'aggId'
+                }, sagaFn);
+                saga.defineCommand({
+                  id: 'id',
+                  meta: 'meta'
+                });
+                saga.defineEvent({
+                  id: 'id',
+                  meta: 'meta'
+                });
+
+                saga.useSagaStore(sagaStore);
+
+                saga.handle({ aggId: '5647', meta: 'evtMeta' }, function (err, sagaModel) {
+                  expect(err).not.to.be.ok();
+                  expect(sagaModel.id).to.eql('5647');
+                  var cmds = sagaModel.getTimeoutCommands();
+                  expect(cmds.length).to.eql(2);
+                  expect(cmds[0].c).to.eql('data1');
+                  expect(cmds[0].meta).to.eql('evtMeta');
+                  expect(cmds[1].c).to.eql('data2');
+                  expect(cmds[1].meta).to.eql('m');
+                  var timeout = sagaModel.getTimeoutAt();
+                  expect(timeout.getTime()).to.eql((new Date(2034, 8, 27)).getTime());
+                  expect(fnCalled).to.eql(true);
+                  done();
+                });
+              });
+
+            });
+
+          });
+
+          describe('calling saga.commit in the handle function', function () {
+
+            describe('having destroyed the saga', function () {
+
+              before(function (done) {
+                sagaStore.save({ id: '9361', _commitStamp: new Date(), my: 'data' }, [], done);
+              });
+
+              it('it should work as expected', function (done) {
+
+                var fnCalled = false;
+                var sagaFn = function (e, s, clb) {
+                  expect(e.aggId).to.eql('9361');
+                  expect(s.id).to.eql('9361');
+                  s.destroy();
+                  fnCalled = true;
+                  s.commit(clb);
+                };
+                saga = api.defineSaga({
+                  name: 'eventName',
+                  version: 3,
+                  id: 'aggId'
+                }, sagaFn);
+
+                saga.useSagaStore(sagaStore);
+
+                saga.handle({ aggId: '9361', meta: 'evtMeta' }, function (err, sagaModel) {
+                  expect(err).not.to.be.ok();
+                  expect(sagaModel.id).to.eql('9361');
+                  expect(sagaModel.isDestroyed()).to.eql(true);
+                  expect(fnCalled).to.eql(true);
+
+                  sagaStore.get('9361', function (err, saga) {
+                    expect(err).not.to.be.ok();
+                    expect(saga).not.to.be.ok();
+                    done();
+                  });
+                });
+              });
+              
+            });
+
+            describe('with some commands and data and timeout stuff', function () {
+
+              it('it should work as expected', function (done) {
+
+                var sagaId;
+                var fnCalled = false;
+                var sagaFn = function (e, s, clb) {
+                  expect(e.aggId).to.eql('5647');
+                  expect(s.id).to.be.a('string');
+                  sagaId = s.id;
+                  s.addCommandToSend({ cS: 'data1S' });
+                  s.addCommandToSend({ cS: 'data2S', meta: 'mS' });
+                  s.defineTimeout(new Date(2034, 8, 27), [{ c: 'data1' }, { c: 'data2', meta: 'm' }]);
+                  fnCalled = true;
+                  s.commit(clb);
+                };
+                saga = api.defineSaga({
+                  name: 'eventName',
+                  version: 3
+                }, sagaFn);
+                saga.defineCommand({
+                  id: 'id',
+                  meta: 'meta'
+                });
+                saga.defineEvent({
+                  id: 'id',
+                  meta: 'meta'
+                });
+
+                saga.useSagaStore(sagaStore);
+
+                saga.handle({ aggId: '5647', meta: 'evtMeta' }, function (err, sagaModel) {
+                  expect(err).not.to.be.ok();
+                  expect(sagaModel.id).to.eql(sagaId);
+                  var cmdsT = sagaModel.getTimeoutCommands();
+                  expect(cmdsT.length).to.eql(2);
+                  expect(cmdsT[0].c).to.eql('data1');
+                  expect(cmdsT[0].meta).to.eql('evtMeta');
+                  expect(cmdsT[1].c).to.eql('data2');
+                  expect(cmdsT[1].meta).to.eql('m');
+                  var timeout = sagaModel.getTimeoutAt();
+                  expect(timeout.getTime()).to.eql((new Date(2034, 8, 27)).getTime());
+
+                  var cmds = sagaModel.getUnsentCommands();
+                  expect(cmds.length).to.eql(2);
+                  expect(cmds[0].cS).to.eql('data1S');
+                  expect(cmds[0].meta).to.eql('evtMeta');
+                  expect(cmds[1].cS).to.eql('data2S');
+                  expect(cmds[1].meta).to.eql('mS');
+                  
+                  expect(fnCalled).to.eql(true);
+                  
+                  sagaStore.get(sagaId, function (err, saga) {
+                    expect(err).not.to.be.ok();
+                    expect(saga).to.be.an('object');
+                    expect(saga.id).to.eql(sagaId);
+                    var cmdsT = saga._timeoutCommands;
+                    expect(cmdsT.length).to.eql(2);
+                    expect(cmdsT[0].c).to.eql('data1');
+                    expect(cmdsT[0].meta).to.eql('evtMeta');
+                    expect(cmdsT[1].c).to.eql('data2');
+                    expect(cmdsT[1].meta).to.eql('m');
+                    var timeout = saga._timeoutAt;
+                    expect(timeout.getTime()).to.eql((new Date(2034, 8, 27)).getTime());
+
+                    done();
+                  });
+                });
+              });
+
+            });
+
+          });
+
+          describe('defining a payload', function () {
+
+            it('it should work as expected', function (done) {
+
+              var fnCalled = false;
+              var sagaFn = function (e, s, clb) {
+                expect(e).to.eql('abc');
+                expect(s.id).to.be.a('string');
+                fnCalled = true;
+                clb(null);
+              };
+              saga = api.defineSaga({
+                name: 'eventName',
+                version: 3,
+                payload: 'path'
+              }, sagaFn);
+
+              saga.useSagaStore(sagaStore);
+
+              saga.handle({ aggId: '213', meta: 'evtMeta', path: 'abc' }, function (err, sagaModel) {
+                expect(err).not.to.be.ok();
+                expect(sagaModel.id).to.be.a('string');
+                expect(fnCalled).to.eql(true);
+                done();
+              });
+            });
+
+          });
+
         });
 
       });
