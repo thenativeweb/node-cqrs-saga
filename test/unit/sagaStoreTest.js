@@ -333,8 +333,9 @@ describe('SagaStore', function() {
 
                     it('it should callback without an error', function (done) {
 
-                      store.getOlderSagas(new Date(), function(err) {
-                        expect(err).not.to.be.ok();
+                      store.getOlderSagas(new Date(), function(err, nothing) {
+                      expect(err).not.to.be.ok();
+                      expect(nothing).to.eql(undefined);
                         done();
                       });
 
@@ -378,8 +379,9 @@ describe('SagaStore', function() {
 
                     it('it should callback without an error', function (done) {
 
-                      store.save({ id: '1234', _commitStamp: new Date() }, [{ id: '234' }], function(err) {
-                        expect(err).not.to.be.ok();
+                      store.save({ id: '1234', _commitStamp: new Date() }, [{ id: '234' }], function(err, nothing) {
+                      expect(err).not.to.be.ok();
+                      expect(nothing).to.eql(undefined);
                         done();
                       });
 
@@ -423,8 +425,9 @@ describe('SagaStore', function() {
 
                     it('it should callback without an error', function (done) {
 
-                      store.setCommandToDispatched('1234', '4356', function(err) {
-                        expect(err).not.to.be.ok();
+                      store.setCommandToDispatched('1234', '4356', function(err, nothing) {
+                      expect(err).not.to.be.ok();
+                      expect(nothing).to.eql(undefined);
                         done();
                       });
 
