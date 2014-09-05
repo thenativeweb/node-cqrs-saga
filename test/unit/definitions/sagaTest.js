@@ -163,34 +163,39 @@ describe('saga definition', function () {
         sagaStore.connect(done);
       });
       
-      describe('that defines containsProperties', function () {
-        
-        describe('not matching', function () {
+      describe('in a saga', function () {
 
-          it('it should work as expected', function (done) {
-            var sagaFn = function () {};
-            saga = api.defineSaga({
-              name: 'eventName',
-              version: 3,
-              payload: 'p',
-              containingProperties: ['aggId']
-            }, sagaFn);
+        describe('that defines containsProperties', function () {
 
-            saga.useSagaStore(sagaStore);
+          describe('not matching', function () {
 
-            saga.handle({}, function (err, cmds) {
-              expect(err).not.to.be.ok();
-              expect(cmds).not.to.be.ok();
-              done();
+            it('it should work as expected', function (done) {
+              var sagaFn = function () {};
+              saga = api.defineSaga({
+                name: 'eventName',
+                version: 3,
+                payload: 'p',
+                containingProperties: ['aggId']
+              }, sagaFn);
+
+              saga.useSagaStore(sagaStore);
+
+              saga.handle({}, function (err, cmds) {
+                expect(err).not.to.be.ok();
+                expect(cmds).not.to.be.ok();
+                done();
+              });
             });
+
           });
-          
-        });
 
 //        describe('matching');
-        
-      });
 
+        });
+
+//        describe('that does not define containProperties');
+
+      });
       
 
     });
