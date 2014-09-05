@@ -333,9 +333,8 @@ describe('SagaStore', function() {
 
                     it('it should callback without an error', function (done) {
 
-                      store.getOlderSagas(new Date(), function(err, nothing) {
+                      store.getOlderSagas(new Date(), function(err) {
                       expect(err).not.to.be.ok();
-                      expect(nothing).to.eql(undefined);
                         done();
                       });
 
