@@ -180,16 +180,45 @@ describe('saga definition', function () {
 
               saga.useSagaStore(sagaStore);
 
-              saga.handle({}, function (err, cmds) {
+              saga.handle({}, function (err, sagaModel) {
                 expect(err).not.to.be.ok();
-                expect(cmds).not.to.be.ok();
+                expect(sagaModel).not.to.be.ok();
                 done();
               });
             });
 
           });
 
-//        describe('matching');
+          describe('matching', function () {
+
+            it('it should work as expected', function (done) {
+              
+              var fnCalled = false;
+              var sagaId = null;
+              var sagaFn = function (e, s, clb) {
+                expect(e.aggId).to.eql('123');
+                expect(s.id).to.be.a('string');
+                sagaId = s.id;
+                fnCalled = true;
+                clb(null);
+              };
+              saga = api.defineSaga({
+                name: 'eventName',
+                version: 3,
+                containingProperties: ['aggId']
+              }, sagaFn);
+
+              saga.useSagaStore(sagaStore);
+
+              saga.handle({ aggId: '123' }, function (err, sagaModel) {
+                expect(err).not.to.be.ok();
+                expect(sagaModel.id).to.eql(sagaId);
+                expect(fnCalled).to.eql(true);
+                done();
+              });
+            });
+
+          });
 
         });
 
