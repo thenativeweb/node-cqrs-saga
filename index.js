@@ -28,7 +28,7 @@ var files = fs.readdirSync(path.join(__dirname, 'lib/definitions'));
 files.forEach(function (file) {
   var name = path.basename(file, '.js');
   var nameCap = name.charAt(0).toUpperCase() + name.slice(1);
-  domain['define' + nameCap] = function () {
+  pm['define' + nameCap] = function () {
     return construct(require('./lib/definitions/' + name), _.toArray(arguments));
   };
 });
