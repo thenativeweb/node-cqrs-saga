@@ -99,40 +99,101 @@ describe('saga definition', function () {
         expect(saga.defineEvent).to.be.a('function');
         expect(saga.defineOptions).to.be.a('function');
 
+        expect(saga.idGenerator).to.be.a('function');
         expect(saga.handle).to.be.a('function');
+        expect(saga.useSagaStore).to.be.a('function');
 
       });
 
     });
 
-//    describe('handling an event', function () {
-//
-//      it('it should work as expected', function (done) {
-//        var cmdObj = { my: 'command', with: { deep: 'value' }, aggregate: { id: 1234 } };
-//        var clb = function () {};
-//
-//        var cmdHndFn = function (cmd, commandHandler, callback) {
-//          expect(cmd).to.eql(cmdObj);
-//          expect(commandHandler).to.eql(cmdHnd);
-//          expect(clb).to.be.a('function');
-//          done();
-//        };
-//
-//        var cmdHnd = api.defineCommandHandler({ name: 'commandName', version: 3 }, cmdHndFn);
-//
-//        // dummy / mock stuff...
-//        var agg = new Aggregate();
-//        agg.validateCommand = function (cmd) {
-//          return null;
-//        };
-//        cmdHnd.useAggregate(agg);
-//        cmdHnd.useEventStore(eventStore);
-//        cmdHnd.useAggregateLock(aggregateLock);
-//
-//        cmdHnd.handle(cmdObj, clb);
-//      });
-//
-//    });
+    describe('defining an id generator function', function() {
+
+      var saga;
+
+      beforeEach(function () {
+        var sagaFn = function () {};
+        saga = api.defineSaga({ name: 'eventName', version: 3 }, sagaFn);
+        saga.getNewId = null;
+      });
+
+      describe('in a synchronous way', function() {
+
+        it('it should be transformed internally to an asynchronous way', function(done) {
+
+          saga.idGenerator(function () {
+            var id = require('node-uuid').v4().toString();
+            return id;
+          });
+
+          saga.getNewId(function (err, id) {
+            expect(id).to.be.a('string');
+            done();
+          });
+
+        });
+
+      });
+
+      describe('in an synchronous way', function() {
+
+        it('it should be taken as it is', function(done) {
+
+          saga.idGenerator(function (callback) {
+            setTimeout(function () {
+              var id = require('node-uuid').v4().toString();
+              callback(null, id);
+            }, 10);
+          });
+
+          saga.getNewId(function (err, id) {
+            expect(id).to.be.a('string');
+            done();
+          });
+
+        });
+
+      });
+
+    });
+
+    describe('handling an event', function () {
+      
+      before(function (done) {
+        sagaStore.connect(done);
+      });
+      
+      describe('that defines containsProperties', function () {
+        
+        describe('not matching', function () {
+
+          it('it should work as expected', function (done) {
+            var sagaFn = function () {};
+            saga = api.defineSaga({
+              name: 'eventName',
+              version: 3,
+              payload: 'p',
+              containingProperties: ['aggId']
+            }, sagaFn);
+
+            saga.useSagaStore(sagaStore);
+
+            saga.handle({}, function (err, cmds) {
+              expect(err).not.to.be.ok();
+              expect(cmds).not.to.be.ok();
+              done();
+            });
+          });
+          
+        });
+
+//        describe('matching');
+        
+      });
+
+      
+
+    });
 
   });
 
