@@ -159,6 +159,8 @@ describe('saga definition', function () {
 
     describe('handling an event', function () {
       
+      var saga;
+      
       before(function (done) {
         sagaStore.connect(done);
       });
@@ -222,10 +224,77 @@ describe('saga definition', function () {
 
         });
 
-//        describe('that does not define containProperties');
+        describe('that does not define containProperties', function () {
+          
+          describe('having defined an id', function () {
+
+            it('it should it as saga id', function (done) {
+
+              var fnCalled = false;
+              var sagaFn = function (e, s, clb) {
+                expect(e.aggId).to.eql('123');
+                expect(s.id).to.eql('123');
+                fnCalled = true;
+                clb(null);
+              };
+              saga = api.defineSaga({
+                name: 'eventName',
+                version: 3,
+                id: 'aggId'
+              }, sagaFn);
+
+              saga.useSagaStore(sagaStore);
+
+              saga.handle({ aggId: '123' }, function (err, sagaModel) {
+                expect(err).not.to.be.ok();
+                expect(sagaModel.id).to.eql('123');
+                expect(fnCalled).to.eql(true);
+                done();
+              });
+            });
+            
+          });
+
+          describe('having an existing saga', function () {
+            
+            before(function (done) {
+              sagaStore.save({ id: '5647', _commitStamp: new Date(), my: 'data' }, [], done);
+            });
+
+            it('it should use the existing data in the saga', function (done) {
+
+              var fnCalled = false;
+              var sagaFn = function (e, s, clb) {
+                expect(e.aggId).to.eql('5647');
+                expect(s.id).to.eql('5647');
+                expect(s.get('my')).to.eql('data');
+                s.set('new', 'value');
+                fnCalled = true;
+                clb(null);
+              };
+              saga = api.defineSaga({
+                name: 'eventName',
+                version: 3,
+                id: 'aggId'
+              }, sagaFn);
+
+              saga.useSagaStore(sagaStore);
+
+              saga.handle({ aggId: '5647' }, function (err, sagaModel) {
+                expect(err).not.to.be.ok();
+                expect(sagaModel.id).to.eql('5647');
+                expect(sagaModel.get('my')).to.eql('data');
+                expect(sagaModel.get('new')).to.eql('value');
+                expect(fnCalled).to.eql(true);
+                done();
+              });
+            });
+
+          });
+
+        });
 
       });
-      
 
     });
 
