@@ -6,7 +6,7 @@ var expect = require('expect.js'),
   Base = require('../../lib/store/base'),
   InMemory = require('../../lib/store/databases/inmemory');
 
-describe('SagaStore', function() {
+describe('sagaStore', function() {
 
   it('it should have the correct interface', function() {
 
@@ -79,7 +79,7 @@ describe('SagaStore', function() {
 
     describe('with options containing a type property with the value of', function() {
 
-      var types = ['inmemory', 'mongodb'/*, 'redis', 'tingodb', 'couchdb'*/];
+      var types = ['inmemory', 'mongodb', 'redis'/*, 'tingodb', 'couchdb'*/];
 
       types.forEach(function(type) {
 
