@@ -79,7 +79,7 @@ describe('SagaStore', function() {
 
     describe('with options containing a type property with the value of', function() {
 
-      var types = ['inmemory'/*, 'mongodb', 'tingodb', 'redis', 'couchdb'*/];
+      var types = ['inmemory', 'mongodb'/*, 'redis', 'tingodb', 'couchdb'*/];
 
       types.forEach(function(type) {
 
