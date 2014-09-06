@@ -1,6 +1,8 @@
 var expect = require('expect.js'),
   async = require('async'),
+  _ = require('lodash'),
   sagastore = require('../../lib/store'),
+  ConcurrencyError = require('../../lib/concurrencyError'),
   Base = require('../../lib/store/base'),
   InMemory = require('../../lib/store/databases/inmemory');
 
@@ -143,7 +145,7 @@ describe('SagaStore', function() {
                 store.connect(function (err) {
                   expect(err).not.to.be.ok();
                   done();
-                })
+                });
 
               });
 
@@ -155,7 +157,7 @@ describe('SagaStore', function() {
 
                 store = sagastore.create({ type: type });
                 store.once('connect', done);
-                store.connect()
+                store.connect();
 
               });
 
@@ -439,20 +441,32 @@ describe('SagaStore', function() {
               });
 
               describe('having some saved sagas', function() {
-                
-                var saga1 = { id: 'sagaId1', _commitStamp: new Date(2014, 3, 1), _timeoutAt: new Date(2214, 3, 17), data: 'sagaData1' };
-                var cmds1 = [{ id: 'cmdId1', data: 'cmdData1' }];
-                
-                var saga2 = { id: 'sagaId2', _commitStamp: new Date(2014, 3, 2), _timeoutAt: new Date(2014, 3, 15), data: 'sagaData2' };
-                var cmds2 = [{ id: 'cmdId2', data: 'cmdData2' }, { id: 'cmdId22', data: 'cmdData22' }];
-                
-                var saga3 = { id: 'sagaId3', _commitStamp: new Date(2014, 3, 5), data: 'sagaData3' };
-                var cmds3 = [{ id: 'cmdId3', data: 'cmdData3' }];
-                
-                var saga4 = { id: 'sagaId4', _commitStamp: new Date(2014, 3, 7), data: 'sagaData4' };
-                var cmds4 = [];
+
+                var saga1;
+                var cmds1;
+
+                var saga2;
+                var cmds2;
+
+                var saga3;
+                var cmds3;
+
+                var saga4;
+                var cmds4;
 
                 beforeEach(function (done) {
+                  saga1 = { id: 'sagaId1', _commitStamp: new Date(2014, 3, 1), _timeoutAt: new Date(2214, 3, 17), data: 'sagaData1' };
+                  cmds1 = [{ id: 'cmdId1', data: 'cmdData1' }];
+
+                  saga2 = { id: 'sagaId2', _commitStamp: new Date(2014, 3, 2), _timeoutAt: new Date(2014, 3, 15), data: 'sagaData2' };
+                  cmds2 = [{ id: 'cmdId2', data: 'cmdData2' }, { id: 'cmdId22', data: 'cmdData22' }];
+
+                  saga3 = { id: 'sagaId3', _commitStamp: new Date(2014, 3, 5), data: 'sagaData3' };
+                  cmds3 = [{ id: 'cmdId3', data: 'cmdData3' }];
+
+                  saga4 = { id: 'sagaId4', _commitStamp: new Date(2014, 3, 7), data: 'sagaData4' };
+                  cmds4 = [];
+                  
                   store.clear(function () {
                     async.series([
                       function (callback) {
@@ -636,6 +650,54 @@ describe('SagaStore', function() {
                           });
                         });
                       });
+                    });
+
+                  });
+
+                });
+                
+                describe('calling save', function () {
+
+                  describe('but beeing updated by someone else in the meantime', function () {
+
+                    it('it should callback with a concurrency error', function (done) {
+
+                      store.get('sagaId4', function (err, saga) {
+                        expect(err).not.to.be.ok();
+                        var org = _.cloneDeep(saga);
+                        
+                        saga.n = 'new';
+                        
+                        store.save(saga, [], function (err) {
+                          expect(err).not.to.be.ok();
+                          org.n = 'other';
+                          store.save(org, [], function (err) {
+                            expect(err).to.be.a(ConcurrencyError);
+
+                            done();
+                          });
+                        });
+                      });
+
+                    });
+
+                  });
+
+                  describe('but beeing updated by someone else in the meantime and creating with the same id', function() {
+
+                    it('it should callback with a concurrency error', function (done) {
+
+                      var s1 = { id: 'mySagaId', _commitStamp: new Date(2014, 3, 7), data: 'bla' };
+                      var s2 = { id: 'mySagaId', _commitStamp: new Date(2014, 3, 7), data: 'bla2' };
+
+                      store.save(s1, [], function (err) {
+                        expect(err).not.to.be.ok();
+                        store.save(s2, [], function (err) {
+                          expect(err).to.be.a(ConcurrencyError);
+                          done();
+                        });
+                      });
+
                     });
 
                   });

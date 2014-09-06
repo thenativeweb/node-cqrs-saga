@@ -664,19 +664,31 @@ describe('power management', function () {
         pm.init(done);
       });
 
-      var saga1 = { id: 'sagaId1', _commitStamp: new Date(2014, 3, 1), _timeoutAt: new Date(2214, 3, 17), data: 'sagaData1' };
-      var cmds1 = [{ id: 'cmdId1', data: 'cmdData1' }];
+      var saga1;
+      var cmds1;
 
-      var saga2 = { id: 'sagaId2', _commitStamp: new Date(2014, 3, 2), _timeoutAt: new Date(2014, 3, 15), data: 'sagaData2' };
-      var cmds2 = [{ id: 'cmdId2', data: 'cmdData2' }, { id: 'cmdId22', data: 'cmdData22' }];
+      var saga2;
+      var cmds2;
 
-      var saga3 = { id: 'sagaId3', _commitStamp: new Date(2014, 3, 5), data: 'sagaData3' };
-      var cmds3 = [{ id: 'cmdId3', data: 'cmdData3' }];
+      var saga3;
+      var cmds3;
 
-      var saga4 = { id: 'sagaId4', _commitStamp: new Date(2014, 3, 7), data: 'sagaData4' };
-      var cmds4 = [];
+      var saga4;
+      var cmds4;
 
       beforeEach(function (done) {
+        saga1 = { id: 'sagaId1', _commitStamp: new Date(2014, 3, 1), _timeoutAt: new Date(2214, 3, 17), data: 'sagaData1' };
+        cmds1 = [{ id: 'cmdId1', data: 'cmdData1' }];
+
+        saga2 = { id: 'sagaId2', _commitStamp: new Date(2014, 3, 2), _timeoutAt: new Date(2014, 3, 15), data: 'sagaData2' };
+        cmds2 = [{ id: 'cmdId2', data: 'cmdData2' }, { id: 'cmdId22', data: 'cmdData22' }];
+
+        saga3 = { id: 'sagaId3', _commitStamp: new Date(2014, 3, 5), data: 'sagaData3' };
+        cmds3 = [{ id: 'cmdId3', data: 'cmdData3' }];
+
+        saga4 = { id: 'sagaId4', _commitStamp: new Date(2014, 3, 7), data: 'sagaData4' };
+        cmds4 = [];
+        
         pm.sagaStore.clear(function () {
           async.series([
             function (callback) {
