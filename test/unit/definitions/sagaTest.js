@@ -617,6 +617,76 @@ describe('saga definition', function () {
             });
 
           });
+          
+          describe('defining existing true', function () {
+
+            describe('not having an existing', function () {
+
+              it('it should work as expected', function (done) {
+
+                var fnCalled = false;
+                var sagaFn = function (e, s, clb) {
+                  expect(e).to.eql('abc');
+                  expect(s.id).to.be.a('string');
+                  fnCalled = true;
+                  clb(null);
+                };
+                saga = api.defineSaga({
+                  name: 'eventName',
+                  version: 3,
+                  payload: 'path',
+                  existing: true,
+                  id: 'aggId'
+                }, sagaFn);
+
+                saga.useSagaStore(sagaStore);
+
+                saga.handle({ aggId: '9876', meta: 'evtMeta', path: 'abc' }, function (err, sagaModel) {
+                  expect(err).not.to.be.ok();
+                  expect(fnCalled).to.eql(false);
+                  expect(sagaModel).not.to.be.ok();
+                  done();
+                });
+              });
+
+            });
+
+            describe('having an existing', function () {
+              
+              before(function (done) {
+                sagaStore.save({ id: '182734', _commitStamp: new Date() }, [], done);
+              });
+
+              it('it should work as expected', function (done) {
+
+                var fnCalled = false;
+                var sagaFn = function (e, s, clb) {
+                  expect(e).to.eql('abc');
+                  expect(s.id).to.be.a('string');
+                  fnCalled = true;
+                  clb(null);
+                };
+                saga = api.defineSaga({
+                  name: 'eventName',
+                  version: 3,
+                  payload: 'path',
+                  existing: true,
+                  id: 'aggId'
+                }, sagaFn);
+
+                saga.useSagaStore(sagaStore);
+
+                saga.handle({ aggId: '182734', meta: 'evtMeta', path: 'abc' }, function (err, sagaModel) {
+                  expect(err).not.to.be.ok();
+                  expect(fnCalled).to.eql(true);
+                  expect(sagaModel.id).to.eql('182734');
+                  done();
+                });
+              });
+
+            });
+            
+          });
 
         });
 
