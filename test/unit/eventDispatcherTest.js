@@ -101,14 +101,15 @@ describe('eventDispatcher', function () {
 
         describe('with no matching saga', function () {
 
-          it('it should callback with an error', function (done) {
+          it('it should callback without an error', function (done) {
 
             var evtDisp = new EventDispatcher({ getSagas: function () {
               return null;
             }}, { name: 'evtName' });
-            evtDisp.dispatch({ evtName: 'evtNameSpec' }, function (err) {
-              expect(err).to.be.ok();
-              expect(err.message).to.match(/no saga/i);
+            evtDisp.dispatch({ evtName: 'evtNameSpec' }, function (err, sagaModels) {
+              expect(err).not.to.be.ok();
+              expect(sagaModels).to.be.an('array');
+              expect(sagaModels.length).to.eql(0);
               done();
             });
 

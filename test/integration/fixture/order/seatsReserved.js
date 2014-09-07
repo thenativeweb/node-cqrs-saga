@@ -1,6 +1,7 @@
 // if exports is an array, it will be the same like loading multiple files...
-module.exports = require('cqrs-saga').defineSaga({// event to match...
-  name: 'seatsReserved',
+//module.exports = require('cqrs-saga').defineSaga({// event to match..
+module.exports = require('../../../../').defineSaga({// event to match...
+  name: 'seatsReserved', // optional, default is file name without extension
   aggregate: 'reservation',
   context: 'sale',
   containingProperties: ['payload.transactionId'],

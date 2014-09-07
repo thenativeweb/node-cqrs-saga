@@ -136,8 +136,6 @@ describe('base definition', function () {
             meta: 'pass'
           });
 
-          expect(defaults.correlationId).to.eql(def.definitions.event.correlationId);
-          expect(defaults.id).to.eql(def.definitions.event.id);
           expect(defaults.name).to.eql(def.definitions.event.name);
           expect(def.definitions.event.aggregate).to.eql('aggName');
           expect(defaults.aggregate).not.to.eql(def.definitions.event.aggregate);
@@ -167,9 +165,6 @@ describe('base definition', function () {
             meta: 'pass'
           });
 
-
-        expect(def.definitions.event.id).to.eql('eventId');
-          expect(defaults.id).not.to.eql(def.definitions.event.id);
           expect(def.definitions.event.name).to.eql('defName');
           expect(defaults.name).not.to.eql(def.definitions.event.name);
           expect(def.definitions.event.aggregate).to.eql('aggName');
