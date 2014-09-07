@@ -65,6 +65,38 @@ describe('saga model', function () {
       });
 
     });
+    
+    describe('setting a new id', function () {
+      
+      it('it should update its attribute value too', function () {
+
+        var saga = new SagaModel('1234');
+
+        expect(saga.id).to.eql('1234');
+        expect(saga.get('id')).to.eql('1234');
+        expect(saga.attributes.id).to.eql('1234');
+
+        saga.id = '8372';
+        
+        expect(saga.id).to.eql('8372');
+        expect(saga.get('id')).to.eql('8372');
+        expect(saga.attributes.id).to.eql('8372');
+
+        saga.set('id', '9163');
+
+        expect(saga.id).to.eql('9163');
+        expect(saga.get('id')).to.eql('9163');
+        expect(saga.attributes.id).to.eql('9163');
+
+        saga.set({ id: '6391' });
+
+        expect(saga.id).to.eql('6391');
+        expect(saga.get('id')).to.eql('6391');
+        expect(saga.attributes.id).to.eql('6391');
+        
+      });
+      
+    });
 
     describe('calling has', function() {
 
