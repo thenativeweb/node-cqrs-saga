@@ -380,7 +380,7 @@ describe('sagaStore', function() {
 
                     it('it should callback without an error', function (done) {
 
-                      store.save({ id: '1234', _commitStamp: new Date() }, [{ id: '234' }], function(err, nothing) {
+                      store.save({ id: '1234', _commitStamp: new Date() }, [{ id: '234', payload: { id: '234' } }], function(err, nothing) {
                       expect(err).not.to.be.ok();
                       expect(nothing).to.eql(undefined);
                         done();
@@ -456,13 +456,13 @@ describe('sagaStore', function() {
 
                 beforeEach(function (done) {
                   saga1 = { id: 'sagaId1', _commitStamp: new Date(2014, 3, 1), _timeoutAt: new Date(2214, 3, 17), data: 'sagaData1' };
-                  cmds1 = [{ id: 'cmdId1', data: 'cmdData1' }];
+                  cmds1 = [{ id: 'cmdId1', payload: { id: 'cmdId1', data: 'cmdData1' } }];
 
                   saga2 = { id: 'sagaId2', _commitStamp: new Date(2014, 3, 2), _timeoutAt: new Date(2014, 3, 15), data: 'sagaData2' };
-                  cmds2 = [{ id: 'cmdId2', data: 'cmdData2' }, { id: 'cmdId22', data: 'cmdData22' }];
+                  cmds2 = [{ id: 'cmdId2', payload: { id: 'cmdId2', data: 'cmdData2' } }, { id: 'cmdId22', payload: { id: 'cmdId22', data: 'cmdData22' } }];
 
                   saga3 = { id: 'sagaId3', _commitStamp: new Date(2014, 3, 5), data: 'sagaData3' };
-                  cmds3 = [{ id: 'cmdId3', data: 'cmdData3' }];
+                  cmds3 = [{ id: 'cmdId3', payload: { id: 'cmdId3', data: 'cmdData3' } }];
 
                   saga4 = { id: 'sagaId4', _commitStamp: new Date(2014, 3, 7), data: 'sagaData4' };
                   cmds4 = [];
@@ -531,17 +531,21 @@ describe('sagaStore', function() {
                       expect(cmds).to.be.an('array');
                       expect(cmds.length).to.eql(4);
                       expect(cmds[0].sagaId).to.eql(saga1.id);
-                      expect(cmds[0].command.id).to.eql(cmds1[0].id);
-                      expect(cmds[0].command.data).to.eql(cmds1[0].data);
+                      expect(cmds[0].commandId).to.eql(cmds1[0].id);
+                      expect(cmds[0].command.id).to.eql(cmds1[0].payload.id);
+                      expect(cmds[0].command.data).to.eql(cmds1[0].payload.data);
                       expect(cmds[1].sagaId).to.eql(saga2.id);
-                      expect(cmds[1].command.id).to.eql(cmds2[0].id);
-                      expect(cmds[1].command.data).to.eql(cmds2[0].data);
+                      expect(cmds[1].commandId).to.eql(cmds2[0].id);
+                      expect(cmds[1].command.id).to.eql(cmds2[0].payload.id);
+                      expect(cmds[1].command.data).to.eql(cmds2[0].payload.data);
                       expect(cmds[2].sagaId).to.eql(saga2.id);
-                      expect(cmds[2].command.id).to.eql(cmds2[1].id);
-                      expect(cmds[2].command.data).to.eql(cmds2[1].data);
+                      expect(cmds[2].commandId).to.eql(cmds2[1].id);
+                      expect(cmds[2].command.id).to.eql(cmds2[1].payload.id);
+                      expect(cmds[2].command.data).to.eql(cmds2[1].payload.data);
                       expect(cmds[3].sagaId).to.eql(saga3.id);
-                      expect(cmds[3].command.id).to.eql(cmds3[0].id);
-                      expect(cmds[3].command.data).to.eql(cmds3[0].data);
+                      expect(cmds[3].commandId).to.eql(cmds3[0].id);
+                      expect(cmds[3].command.id).to.eql(cmds3[0].payload.id);
+                      expect(cmds[3].command.data).to.eql(cmds3[0].payload.data);
 
                       done();
                     });
@@ -586,14 +590,17 @@ describe('sagaStore', function() {
                         expect(cmds).to.be.an('array');
                         expect(cmds.length).to.eql(3);
                         expect(cmds[0].sagaId).to.eql(saga1.id);
-                        expect(cmds[0].command.id).to.eql(cmds1[0].id);
-                        expect(cmds[0].command.data).to.eql(cmds1[0].data);
+                        expect(cmds[0].commandId).to.eql(cmds1[0].id);
+                        expect(cmds[0].command.id).to.eql(cmds1[0].payload.id);
+                        expect(cmds[0].command.data).to.eql(cmds1[0].payload.data);
                         expect(cmds[1].sagaId).to.eql(saga2.id);
-                        expect(cmds[1].command.id).to.eql(cmds2[1].id);
-                        expect(cmds[1].command.data).to.eql(cmds2[1].data);
+                        expect(cmds[1].commandId).to.eql(cmds2[1].id);
+                        expect(cmds[1].command.id).to.eql(cmds2[1].payload.id);
+                        expect(cmds[1].command.data).to.eql(cmds2[1].payload.data);
                         expect(cmds[2].sagaId).to.eql(saga3.id);
-                        expect(cmds[2].command.id).to.eql(cmds3[0].id);
-                        expect(cmds[2].command.data).to.eql(cmds3[0].data);
+                        expect(cmds[2].commandId).to.eql(cmds3[0].id);
+                        expect(cmds[2].command.id).to.eql(cmds3[0].payload.id);
+                        expect(cmds[2].command.data).to.eql(cmds3[0].payload.data);
 
                         done();
                       });
@@ -639,11 +646,13 @@ describe('sagaStore', function() {
                               expect(cmds).to.be.an('array');
                               expect(cmds.length).to.eql(2);
                               expect(cmds[0].sagaId).to.eql(saga1.id);
-                              expect(cmds[0].command.id).to.eql(cmds1[0].id);
-                              expect(cmds[0].command.data).to.eql(cmds1[0].data);
+                              expect(cmds[0].commandId).to.eql(cmds1[0].id);
+                              expect(cmds[0].command.id).to.eql(cmds1[0].payload.id);
+                              expect(cmds[0].command.data).to.eql(cmds1[0].payload.data);
                               expect(cmds[1].sagaId).to.eql(saga3.id);
-                              expect(cmds[1].command.id).to.eql(cmds3[0].id);
-                              expect(cmds[1].command.data).to.eql(cmds3[0].data);
+                              expect(cmds[1].commandId).to.eql(cmds3[0].id);
+                              expect(cmds[1].command.id).to.eql(cmds3[0].payload.id);
+                              expect(cmds[1].command.data).to.eql(cmds3[0].payload.data);
                               
                               done();
                             });

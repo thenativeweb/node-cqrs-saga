@@ -358,7 +358,6 @@ describe('power management', function () {
           meta: 'm'
         });
         pm.defineEvent({
-          id: 'i',
           name: 'n',
           context: 'c',
           aggregate: 'a',
@@ -385,8 +384,8 @@ describe('power management', function () {
 
             pm.eventDispatcher.dispatch = function (e, clb) {
               dispatchCalled = true;
-              var s1Ret = [{c: '1'}, {c: '2'}];
-              var s2Ret = [{c: '3'}];
+              var s1Ret = [{i: '1'}, {i: '2'}];
+              var s2Ret = [{i: '3'}];
               clb(null, [{ id: 's1',
                            getUndispatchedCommands: function () { return [].concat(s1Ret); },
                            removeUnsentCommand: function (c) {
@@ -401,8 +400,8 @@ describe('power management', function () {
                          }]);
             };
 
-            pm.sagaStore.setCommandToDispatched = function (sId, c, clb) {
-              sagastoreCalled.push({ sagaId: sId, command: c });
+            pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
+              sagastoreCalled.push({ sagaId: sId, commandId: cId });
               clb(null);
             };
 
@@ -411,19 +410,19 @@ describe('power management', function () {
               expect(dispatchCalled).to.eql(true);
               expect(sagastoreCalled.length).to.eql(3);
               expect(sagastoreCalled[0].sagaId).to.eql('s1');
-              expect(sagastoreCalled[0].command.c).to.eql('1');
+              expect(sagastoreCalled[0].commandId).to.eql('1');
               expect(sagastoreCalled[1].sagaId).to.eql('s1');
-              expect(sagastoreCalled[1].command.c).to.eql('2');
+              expect(sagastoreCalled[1].commandId).to.eql('2');
               expect(sagastoreCalled[2].sagaId).to.eql('s2');
-              expect(sagastoreCalled[2].command.c).to.eql('3');
+              expect(sagastoreCalled[2].commandId).to.eql('3');
               expect(onCommandCalled.length).to.eql(3);
-              expect(onCommandCalled[0].c).to.eql('1');
-              expect(onCommandCalled[1].c).to.eql('2');
-              expect(onCommandCalled[2].c).to.eql('3');
+              expect(onCommandCalled[0].i).to.eql('1');
+              expect(onCommandCalled[1].i).to.eql('2');
+              expect(onCommandCalled[2].i).to.eql('3');
               expect(cmds.length).to.eql(3);
-              expect(cmds[0].c).to.eql('1');
-              expect(cmds[1].c).to.eql('2');
-              expect(cmds[2].c).to.eql('3');
+              expect(cmds[0].i).to.eql('1');
+              expect(cmds[1].i).to.eql('2');
+              expect(cmds[2].i).to.eql('3');
               expect(sagaModels.length).to.eql(2);
               expect(sagaModels[0].id).to.eql('s1');
               expect(sagaModels[0].getUndispatchedCommands().length).to.eql(0);
@@ -456,8 +455,8 @@ describe('power management', function () {
 
             pm.eventDispatcher.dispatch = function (e, clb) {
               dispatchCalled = true;
-              var s1Ret = [{c: '1'}, {c: '2'}];
-              var s2Ret = [{c: '3'}];
+              var s1Ret = [{i: '1'}, {i: '2'}];
+              var s2Ret = [{i: '3'}];
               clb(null, [{ id: 's1',
                 getUndispatchedCommands: function () { return [].concat(s1Ret); },
                 removeUnsentCommand: function (c) {
@@ -472,23 +471,23 @@ describe('power management', function () {
                 }]);
             };
 
-            pm.sagaStore.setCommandToDispatched = function (sId, c, clb) {
-              sagastoreCalled.push({ sagaId: sId, command: c });
+            pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
+              sagastoreCalled.push({ sagaId: sId, commandId: cId });
               clb(null);
 
               if (sagastoreCalled.length === 3) {
                 expect(dispatchCalled).to.eql(true);
                 expect(sagastoreCalled.length).to.eql(3);
                 expect(sagastoreCalled[0].sagaId).to.eql('s1');
-                expect(sagastoreCalled[0].command.c).to.eql('1');
+                expect(sagastoreCalled[0].commandId).to.eql('1');
                 expect(sagastoreCalled[1].sagaId).to.eql('s1');
-                expect(sagastoreCalled[1].command.c).to.eql('2');
+                expect(sagastoreCalled[1].commandId).to.eql('2');
                 expect(sagastoreCalled[2].sagaId).to.eql('s2');
-                expect(sagastoreCalled[2].command.c).to.eql('3');
+                expect(sagastoreCalled[2].commandId).to.eql('3');
                 expect(onCommandCalled.length).to.eql(3);
-                expect(onCommandCalled[0].c).to.eql('1');
-                expect(onCommandCalled[1].c).to.eql('2');
-                expect(onCommandCalled[2].c).to.eql('3');
+                expect(onCommandCalled[0].i).to.eql('1');
+                expect(onCommandCalled[1].i).to.eql('2');
+                expect(onCommandCalled[2].i).to.eql('3');
 
                 done();
               }
@@ -678,13 +677,13 @@ describe('power management', function () {
 
       beforeEach(function (done) {
         saga1 = { id: 'sagaId1', _commitStamp: new Date(2014, 3, 1), _timeoutAt: new Date(2214, 3, 17), data: 'sagaData1' };
-        cmds1 = [{ id: 'cmdId1', data: 'cmdData1' }];
+        cmds1 = [{ id: 'cmdId1', payload: { id: 'cmdId1', data: 'cmdData1' } }];
 
         saga2 = { id: 'sagaId2', _commitStamp: new Date(2014, 3, 2), _timeoutAt: new Date(2014, 3, 15), data: 'sagaData2' };
-        cmds2 = [{ id: 'cmdId2', data: 'cmdData2' }, { id: 'cmdId22', data: 'cmdData22' }];
+        cmds2 = [{ id: 'cmdId2', payload: { id: 'cmdId2', data: 'cmdData2' } }, { id: 'cmdId22', payload: { id: 'cmdId22', data: 'cmdData22' } }];
 
         saga3 = { id: 'sagaId3', _commitStamp: new Date(2014, 3, 5), data: 'sagaData3' };
-        cmds3 = [{ id: 'cmdId3', data: 'cmdData3' }];
+        cmds3 = [{ id: 'cmdId3', payload: { id: 'cmdId3', data: 'cmdData3' } }];
 
         saga4 = { id: 'sagaId4', _commitStamp: new Date(2014, 3, 7), data: 'sagaData4' };
         cmds4 = [];
@@ -894,17 +893,21 @@ describe('power management', function () {
             expect(cmds).to.be.an('array');
             expect(cmds.length).to.eql(4);
             expect(cmds[0].sagaId).to.eql(saga1.id);
-            expect(cmds[0].command.id).to.eql(cmds1[0].id);
-            expect(cmds[0].command.data).to.eql(cmds1[0].data);
+            expect(cmds[0].commandId).to.eql(cmds1[0].id);
+            expect(cmds[0].command.id).to.eql(cmds1[0].payload.id);
+            expect(cmds[0].command.data).to.eql(cmds1[0].payload.data);
             expect(cmds[1].sagaId).to.eql(saga2.id);
-            expect(cmds[1].command.id).to.eql(cmds2[0].id);
-            expect(cmds[1].command.data).to.eql(cmds2[0].data);
+            expect(cmds[1].commandId).to.eql(cmds2[0].id);
+            expect(cmds[1].command.id).to.eql(cmds2[0].payload.id);
+            expect(cmds[1].command.data).to.eql(cmds2[0].payload.data);
             expect(cmds[2].sagaId).to.eql(saga2.id);
-            expect(cmds[2].command.id).to.eql(cmds2[1].id);
-            expect(cmds[2].command.data).to.eql(cmds2[1].data);
+            expect(cmds[2].commandId).to.eql(cmds2[1].id);
+            expect(cmds[2].command.id).to.eql(cmds2[1].payload.id);
+            expect(cmds[2].command.data).to.eql(cmds2[1].payload.data);
             expect(cmds[3].sagaId).to.eql(saga3.id);
-            expect(cmds[3].command.id).to.eql(cmds3[0].id);
-            expect(cmds[3].command.data).to.eql(cmds3[0].data);
+            expect(cmds[3].commandId).to.eql(cmds3[0].id);
+            expect(cmds[3].command.id).to.eql(cmds3[0].payload.id);
+            expect(cmds[3].command.data).to.eql(cmds3[0].payload.data);
 
             done();
           });
@@ -925,14 +928,17 @@ describe('power management', function () {
               expect(cmds).to.be.an('array');
               expect(cmds.length).to.eql(3);
               expect(cmds[0].sagaId).to.eql(saga1.id);
-              expect(cmds[0].command.id).to.eql(cmds1[0].id);
-              expect(cmds[0].command.data).to.eql(cmds1[0].data);
+              expect(cmds[0].commandId).to.eql(cmds1[0].id);
+              expect(cmds[0].command.id).to.eql(cmds1[0].payload.id);
+              expect(cmds[0].command.data).to.eql(cmds1[0].payload.data);
               expect(cmds[1].sagaId).to.eql(saga2.id);
-              expect(cmds[1].command.id).to.eql(cmds2[1].id);
-              expect(cmds[1].command.data).to.eql(cmds2[1].data);
+              expect(cmds[1].commandId).to.eql(cmds2[1].id);
+              expect(cmds[1].command.id).to.eql(cmds2[1].payload.id);
+              expect(cmds[1].command.data).to.eql(cmds2[1].payload.data);
               expect(cmds[2].sagaId).to.eql(saga3.id);
-              expect(cmds[2].command.id).to.eql(cmds3[0].id);
-              expect(cmds[2].command.data).to.eql(cmds3[0].data);
+              expect(cmds[2].commandId).to.eql(cmds3[0].id);
+              expect(cmds[2].command.id).to.eql(cmds3[0].payload.id);
+              expect(cmds[2].command.data).to.eql(cmds3[0].payload.data);
 
               done();
             });
@@ -974,11 +980,13 @@ describe('power management', function () {
                   expect(cmds).to.be.an('array');
                   expect(cmds.length).to.eql(2);
                   expect(cmds[0].sagaId).to.eql(saga1.id);
-                  expect(cmds[0].command.id).to.eql(cmds1[0].id);
-                  expect(cmds[0].command.data).to.eql(cmds1[0].data);
+                  expect(cmds[0].commandId).to.eql(cmds1[0].id);
+                  expect(cmds[0].command.id).to.eql(cmds1[0].payload.id);
+                  expect(cmds[0].command.data).to.eql(cmds1[0].payload.data);
                   expect(cmds[1].sagaId).to.eql(saga3.id);
-                  expect(cmds[1].command.id).to.eql(cmds3[0].id);
-                  expect(cmds[1].command.data).to.eql(cmds3[0].data);
+                  expect(cmds[1].commandId).to.eql(cmds3[0].id);
+                  expect(cmds[1].command.id).to.eql(cmds3[0].payload.id);
+                  expect(cmds[1].command.data).to.eql(cmds3[0].payload.data);
 
                   done();
                 });

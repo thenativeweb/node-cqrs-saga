@@ -4,7 +4,8 @@ module.exports = require('../../../../').defineSaga({// event to match...
 //  name: 'orderCreated', // optional, default is file name without extension
   aggregate: 'order',
   context: 'sale',
-  existing: false // if true it will check if there is already a saga in the db and only if there is something it will continue...
+  existing: false, // if true it will check if there is already a saga in the db and only if there is something it will continue...
+  containingProperties: ['aggregate.id', 'payload.totalCosts', 'payload.seats']
   // payload: 'payload' // if not defined it will pass the whole event...
   // id: 'aggregate.id' // if not defined it will generate an id
   // priority: 1 // optional, default Infinity, all sagas will be sorted by this value
@@ -27,8 +28,8 @@ module.exports = require('../../../../').defineSaga({// event to match...
     payload: {
       transactionId: saga.id,
       seats: evt.payload.seats
-    },
-    meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
+    }//,
+//    meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
   };
 
   saga.addCommandToSend(cmd);
@@ -48,8 +49,8 @@ module.exports = require('../../../../').defineSaga({// event to match...
     },
     payload: {
       transactionId: saga.id
-    },
-    meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
+    }//,
+//    meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
   };
   saga.defineTimeout(tomorrow, [timeoutCmd]); // pass in array of commands or a command object
 
