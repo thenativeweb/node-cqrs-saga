@@ -236,6 +236,120 @@ The values describes the path to that property in the command message.
 	});
 
 
+# Components definition
+
+## Saga
+
+	module.exports = require('cqrs-saga').defineSaga({
+	  // optional, default is file name without extension
+	  name: 'orderCreated',
+	  
+	  // optional
+	  aggregate: 'order',
+	  
+	  // optional
+	  context: 'sale',
+	  
+	  // optional, default 0
+    version: 1,
+	  
+	  // optional, default false
+	  // if true it will check if there is already a saga in the db and only if there is something it will continue...
+	  existing: false,
+	  
+	  // optional, will catch the event only if it contains the defined properties
+	  containingProperties: ['aggregate.id', 'payload.totalCosts', 'payload.seats'],
+	  
+	  // optional, if not defined it will pass the whole event...
+	  payload: 'payload',
+	  
+	  // optional, if not defined it will generate a new id
+	  // it will try to load the saga from the db by this id
+	  id: 'aggregate.id',
+	  
+	  // optional, default Infinity, all sagas will be sorted by this value
+	  priority: 1
+	}, function (evt, saga, callback) {
+	
+	  saga.set('orderId', evt.aggregate.id);
+	  saga.set('totalCosts', evt.payload.totalCosts);
+	  // or
+	  // saga.set({ orderId: evt.aggregate.id, totalCosts: evt.payload.totalCosts });
+	
+	  var cmd = {
+	  
+	    // if you don't pass an id it will generate a new one
+	    id: 'my own command id',
+	    name: 'makeReservation',
+	    aggregate: {
+	      name: 'reservation'
+	    },
+	    context: {
+	      name: 'sale'
+	    },
+	    payload: {
+	      transactionId: saga.id,
+	      seats: saga.has('seats') ? saga.get('seats') : evt.payload.seats
+	    },
+	    
+	    // to transport meta infos (like userId)...
+	    // if not defined, it will use the meta value of the event
+	    meta: evt.meta
+	  };
+	
+	  saga.addCommandToSend(cmd);
+	
+	  // optionally define a timeout
+	  // this can be useful if you have an other process that will fetch timeouted sagas
+	  var tomorrow = new Date();
+	  tomorrow.setDate((new Date()).getDate() + 1); 
+	  var timeoutCmd = {
+	  
+	    // if you don't pass an id it will generate a new one
+	    id: 'my own command id',
+	    name: 'cancelOrder',
+	    aggregate: {
+	      name: 'order',
+	      id: evt.aggregate.id
+	    },
+	    context: {
+	      name: 'sale'
+	    },
+	    payload: {
+	      transactionId: saga.id
+	    },
+	    
+	    // to transport meta infos (like userId)...
+	    // if not defined, it will use the meta value of the event
+	    meta: evt.meta
+	  };
+	  saga.defineTimeout(tomorrow, [timeoutCmd]);
+	  // or
+	  // saga.defineTimeout(tomorrow, timeoutCmd);
+	  // or
+	  // saga.defineTimeout(tomorrow);
+	
+	  saga.commit(callback);
+	});
+
+
+
+# Persistence functions
+
+## getTimoutedSagas
+Use this function to get all timeouted sagas.
+
+## getOlderSagas
+Use this function to get all sagas that are older then the passed date.
+
+## getUndispatchedCommands
+Use this function to get all undispatched commands.
+
+## setCommandToDispatched
+Use this function mark a command as dispatched. (will remove it from the db)
+
+## removeSaga
+Use this function to remove the matched saga.
 
 
 [Release notes](https://github.com/adrai/node-cqrs-saga/blob/master/releasenotes.md)
