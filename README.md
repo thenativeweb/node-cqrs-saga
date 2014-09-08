@@ -333,23 +333,59 @@ The values describes the path to that property in the command message.
 	});
 
 
-
 # Persistence functions
 
 ## getTimoutedSagas
 Use this function to get all timeouted sagas.
 
+	pm.getTimeoutedSagas(function (err, sagas) {
+	  if (err) { return console.log('ohh!'); }
+	  
+	  sagas.forEach(function (saga) {
+	    // saga.id...
+	    // saga.getTimeoutAt();
+	    // saga.getTimeoutCommands();
+	    
+	    // if saga does not clean itself after timouted and/or no commands are defined, then:
+	    pm.removeSaga(saga || saga.id, function (err) {});
+	    // or
+	    // saga.destroy();
+	    // saga.commit(function (err) {});
+	  });
+	});
+
 ## getOlderSagas
 Use this function to get all sagas that are older then the passed date.
 
-## getUndispatchedCommands
-Use this function to get all undispatched commands.
+	pm.getOlderSagas(new Date(2010, 2, 4), function (err, sagas) {
+	  if (err) { return console.log('ohh!'); }
+	  
+	  sagas.forEach(function (saga) {
+	    // saga.id...
+	    // saga.getTimeoutAt();
+	    // saga.getTimeoutCommands();
+	    
+	    // if saga does not clean itself after timouted and/or no commands are defined, then:
+	    pm.removeSaga(saga || saga.id, function (err) {});
+	    // or
+	    // saga.destroy();
+	    // saga.commit(function (err) {});
+	  });
+	});
 
-## setCommandToDispatched
-Use this function mark a command as dispatched. (will remove it from the db)
+## getUndispatchedCommands | setCommandToDispatched
+Use getUndispatchedCommands to get all undispatched commands.
+Use setCommandToDispatched to mark a command as dispatched. (will remove it from the db)
 
-## removeSaga
-Use this function to remove the matched saga.
+	pm.getUndispatchedCommands(function (err, cmds) {
+	  if (err) { return console.log('ohh!'); }
+	  
+	  cmds.forEach(function (cmd) {
+	    // cmd is: { sagaId: 'the id of the saga', commandId: 'the id of the command', command: { /* the command itself */ } }
+	    
+	    pm.setCommandToDispatched(cmd.commandId, cmd.sagaId, function (err) {});
+	  });
+	});
 
 
 [Release notes](https://github.com/adrai/node-cqrs-saga/blob/master/releasenotes.md)
