@@ -151,8 +151,90 @@ The values describes the path to that property in the command message.
 	// or
 	
 	pm.init(); // callback is optional
+
+
+## Handling an event
+
+	pm.handle({
+	  id: 'b80ade36-dd05-4340-8a8b-846eea6e286f',
+	  name: 'orderCreated',
+	  aggregate: {
+	    id: '3b4d44b0-34fb-4ceb-b212-68fe7a7c2f70',
+	    name: 'order'
+	  },
+	  context: {
+	    name: 'sale'
+	  },
+	  payload: {
+      totalCosts: 520,
+      seats: ['4f', '8a']
+	  },
+	  revision: 0,
+	  version: 1,
+	  meta: {
+	    userId: 'ccd65819-4da4-4df9-9f24-5b10bf89ef89'
+	  }
+	}); // callback is optional
 	
+### or
 	
+	pm.handle({
+	  id: 'b80ade36-dd05-4340-8a8b-846eea6e286f',
+	  name: 'orderCreated',
+    aggregate: {
+      id: '3b4d44b0-34fb-4ceb-b212-68fe7a7c2f70',
+      name: 'order'
+    },
+    context: {
+      name: 'sale'
+    },
+    payload: {
+      totalCosts: 520,
+      seats: ['4f', '8a']
+    },
+	  revision: 0,
+	  version: 1,
+	  meta: {
+	    userId: 'ccd65819-4da4-4df9-9f24-5b10bf89ef89'
+	  }
+	}, function (errs, cmds) {
+	  // this callback is called when event is handled successfully or unsuccessfully
+	  // errs can be of type:
+	  // - null
+	  // - Array of Errors
+	  //
+	  // cmds: same as passed in 'onCommand' function
+	});
+	
+### more infos, can be useful if testing
+	
+	pm.handle({
+	  id: 'b80ade36-dd05-4340-8a8b-846eea6e286f',
+	  name: 'orderCreated',
+    aggregate: {
+      id: '3b4d44b0-34fb-4ceb-b212-68fe7a7c2f70',
+      name: 'order'
+    },
+    context: {
+      name: 'sale'
+    },
+    payload: {
+      totalCosts: 520,
+      seats: ['4f', '8a']
+    },
+	  meta: {
+	    userId: 'ccd65819-4da4-4df9-9f24-5b10bf89ef89'
+	  }
+	}, function (errs, cmds, sagaModels) {
+	  // this callback is called when event is handled successfully or unsuccessfully
+	  // errs: is the same as described before
+	  
+	  // cmds: same as passed in 'onCommand' function
+	  // cmds: in case of no error or in case of error here is the array of all commands that should be published
+	  
+	  // sagaModels: represents the saga data after have handled the event
+	});
+
 
 
 

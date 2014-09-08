@@ -390,12 +390,24 @@ describe('power management', function () {
                            getUndispatchedCommands: function () { return [].concat(s1Ret); },
                            removeUnsentCommand: function (c) {
                              s1Ret.splice(s1Ret.indexOf(c), 1);
+                           },
+                           toJSON: function () {
+                             return { id: 's1' };
+                           },
+                           isDestroyed: function () {
+                             return false;
                            }
                          },
                          { id: 's2',
                            getUndispatchedCommands: function () { return [].concat(s2Ret); },
                            removeUnsentCommand: function (c) {
                              s2Ret.splice(s2Ret.indexOf(c), 1);
+                           },
+                           toJSON: function () {
+                             return { id: 's2' };
+                           },
+                           isDestroyed: function () {
+                             return false;
                            }
                          }]);
             };
@@ -425,9 +437,7 @@ describe('power management', function () {
               expect(cmds[2].i).to.eql('3');
               expect(sagaModels.length).to.eql(2);
               expect(sagaModels[0].id).to.eql('s1');
-              expect(sagaModels[0].getUndispatchedCommands().length).to.eql(0);
               expect(sagaModels[1].id).to.eql('s2');
-              expect(sagaModels[1].getUndispatchedCommands().length).to.eql(0);
 
               done();
             });
