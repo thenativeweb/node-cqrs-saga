@@ -251,7 +251,7 @@ The values describes the path to that property in the command message.
 	  context: 'sale',
 	  
 	  // optional, default 0
-    version: 1,
+	  version: 1,
 	  
 	  // optional, default false
 	  // if true it will check if there is already a saga in the db and only if there is something it will continue...
