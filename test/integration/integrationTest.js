@@ -104,6 +104,8 @@ describe('integration', function () {
   });
 
   describe('handling an event that will start a new saga', function () {
+    
+    var transactionId;
 
     it('it should publish a command and it should callback without an error and with commands', function (done) {
 
@@ -140,6 +142,9 @@ describe('integration', function () {
         expect(cmds[0].name).to.eql('makeReservation');
         expect(cmds[0].payload.seats).to.eql(evt.payload.seats);
         expect(cmds[0].payload.transactionId).to.be.a('string');
+
+        transactionId = cmds[0].payload.transactionId;
+        
         expect(cmds[0].meta).to.eql(evt.meta);
         expect(sagaModels).to.be.an('array');
         expect(sagaModels.length).to.eql(1);
@@ -158,6 +163,65 @@ describe('integration', function () {
         expect(publishedCommands[0].meta).to.eql(evt.meta);
 
         done();
+      });
+
+    });
+
+    describe('continue with the next step', function () {
+
+      it('it should publish a command and it should callback without an error and with commands', function (done) {
+
+        var publishedCommands = [];
+
+        pm.onCommand(function (cmd) {
+          publishedCommands.push(cmd);
+        });
+
+        var evt = {
+          name: 'seatsReserved',
+          aggregate: {
+            name: 'reservation',
+            id: 'aggId'
+          },
+          context: {
+            name: 'sale'
+          },
+          version: 0,
+          payload: {
+            transactionId: transactionId
+          },
+          meta: {
+            userId: 'userId'
+          }
+        };
+
+        pm.handle(evt, function (err, cmds, sagaModels) {
+          expect(err).not.to.be.ok();
+          expect(cmds).to.be.an('array');
+          expect(cmds.length).to.eql(1);
+          expect(cmds[0].id).to.be.a('string');
+          expect(cmds[0].name).to.eql('makePayment');
+          expect(cmds[0].payload.transactionId).to.be.a('string');
+          expect(cmds[0].meta).to.eql(evt.meta);
+          expect(sagaModels).to.be.an('array');
+          expect(sagaModels.length).to.eql(1);
+          expect(sagaModels[0].getTimeoutAt()).to.be.a(Date);
+          expect(sagaModels[0].getTimeoutCommands()).to.be.an('array');
+          expect(sagaModels[0].getTimeoutCommands().length).to.eql(1);
+          expect(sagaModels[0].getTimeoutCommands()[0].id).to.be.a('string');
+          expect(sagaModels[0].getTimeoutCommands()[0].name).to.eql('cancelOrder');
+          expect(sagaModels[0].getTimeoutCommands()[0].payload.transactionId).to.eql(cmds[0].payload.transactionId);
+          expect(sagaModels[0].getTimeoutCommands()[0].meta).to.eql(evt.meta);
+          expect(publishedCommands.length).to.eql(1);
+          expect(publishedCommands[0].id).to.be.a('string');
+          expect(publishedCommands[0].name).to.eql('makePayment');
+          expect(publishedCommands[0].payload.costs).to.eql(520);
+          expect(publishedCommands[0].payload.transactionId).to.be.a('string');
+          expect(publishedCommands[0].meta).to.eql(evt.meta);
+
+          done();
+        });
+
       });
 
     });

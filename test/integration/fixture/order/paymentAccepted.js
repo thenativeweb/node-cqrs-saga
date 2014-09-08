@@ -27,6 +27,8 @@ module.exports = require('../../../../').defineSaga({// event to match...
     },
     meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
   };
+  
+  saga.removeTimeout();
 
   saga.addCommandToSend(cmd);
 

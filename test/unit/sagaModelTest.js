@@ -53,6 +53,7 @@ describe('saga model', function () {
         expect(saga.setCommitStamp).to.be.a('function');
         expect(saga.getCommitStamp).to.be.a('function');
         expect(saga.addTimeout).to.be.a('function');
+        expect(saga.removeTimeout).to.be.a('function');
         expect(saga.getTimeoutAt).to.be.a('function');
         expect(saga.getTimeoutCommands).to.be.a('function');
         expect(saga.addUnsentCommand).to.be.a('function');
@@ -343,6 +344,11 @@ describe('saga model', function () {
         expect(cmds.length).to.eql(2);
         expect(cmds[0].id).to.eql('111');
         expect(cmds[1].id).to.eql('222');
+        
+        saga.removeTimeout();
+        
+        expect(saga.getTimeoutAt()).to.eql(undefined);
+        expect(saga.getTimeoutCommands()).to.eql(undefined);
 
       });
 
