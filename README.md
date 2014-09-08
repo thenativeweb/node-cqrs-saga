@@ -382,7 +382,7 @@ Use setCommandToDispatched to mark a command as dispatched. (will remove it from
 	  if (err) { return console.log('ohh!'); }
 	  
 	  cmds.forEach(function (cmd) {
-	    // cmd is: { sagaId: 'the id of the saga', commandId: 'the id of the command', command: { /* the command itself */ } }
+	    // cmd is: { sagaId: 'the id of the saga', commandId: 'the id of the command', command: { /* the command */ } }
 	    
 	    pm.setCommandToDispatched(cmd.commandId, cmd.sagaId, function (err) {});
 	  });
