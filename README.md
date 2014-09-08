@@ -73,18 +73,6 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	});
 
 
-## Define the command structure
-The values describes the path to that property in the command message.
-
-	pm.defineCommand({
-	  // optional, default is 'id'
-	  id: 'id',
-	  
-	  // optional, if defined the values of the event will be copied to the command (can be used to transport information like userId, etc..)
-	  meta: 'meta'
-	});
-
-
 ## Define the event structure
 The values describes the path to that property in the event message.
 
@@ -102,6 +90,18 @@ The values describes the path to that property in the event message.
 	  version: 'version',
 	  
 	  // optional, if defined theses values will be copied to the command (can be used to transport information like userId, etc..)
+	  meta: 'meta'
+	});
+
+
+## Define the command structure
+The values describes the path to that property in the command message.
+
+	pm.defineCommand({
+	  // optional, default is 'id'
+	  id: 'id',
+	  
+	  // optional, if defined the values of the event will be copied to the command (can be used to transport information like userId, etc..)
 	  meta: 'meta'
 	});
 
