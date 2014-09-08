@@ -375,6 +375,7 @@ Use this function to get all sagas that are older then the passed date.
 
 ## getUndispatchedCommands | setCommandToDispatched
 Use getUndispatchedCommands to get all undispatched commands.
+
 Use setCommandToDispatched to mark a command as dispatched. (will remove it from the db)
 
 	pm.getUndispatchedCommands(function (err, cmds) {
