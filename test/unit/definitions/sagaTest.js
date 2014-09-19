@@ -70,6 +70,7 @@ describe('saga definition', function () {
         expect(saga.defineOptions).to.be.a('function');
 
         expect(saga.handle).to.be.a('function');
+        expect(saga.useAsId).to.be.a('function');
 
       });
 
@@ -147,6 +148,58 @@ describe('saga definition', function () {
           });
 
           saga.getNewId(function (err, id) {
+            expect(id).to.be.a('string');
+            done();
+          });
+
+        });
+
+      });
+
+    });
+
+    describe('defining an use as id function', function() {
+
+      var saga;
+
+      beforeEach(function () {
+        var sagaFn = function () {};
+        saga = api.defineSaga({ name: 'eventName', version: 3 }, sagaFn);
+        saga.getNewIdForThisSaga = null;
+      });
+
+      describe('in a synchronous way', function() {
+
+        it('it should be transformed internally to an asynchronous way', function(done) {
+
+          saga.useAsId(function (evt) {
+            expect(evt.my).to.eql('evt');
+            var id = require('node-uuid').v4().toString();
+            return id;
+          });
+
+          saga.getNewIdForThisSaga({ my: 'evt' }, function (err, id) {
+            expect(id).to.be.a('string');
+            done();
+          });
+
+        });
+
+      });
+
+      describe('in an synchronous way', function() {
+
+        it('it should be taken as it is', function(done) {
+
+          saga.useAsId(function (evt, callback) {
+            expect(evt.my).to.eql('evt');
+            setTimeout(function () {
+              var id = require('node-uuid').v4().toString();
+              callback(null, id);
+            }, 10);
+          });
+
+          saga.getNewIdForThisSaga({ my: 'evt' }, function (err, id) {
             expect(id).to.be.a('string');
             done();
           });

@@ -331,6 +331,14 @@ The values describes the path to that property in the command message.
 	
 	  saga.commit(callback);
 	});
+	// optional define a function to that returns an id that will be used as saga id
+	//.useAsId(function (evt) {
+	//  return 'newId';
+	//});
+	// or
+	//.useAsId(function (evt, callback) {
+	//  callback(null, 'newId');
+	//});
 
 
 # Persistence functions
