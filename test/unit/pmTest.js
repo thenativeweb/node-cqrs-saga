@@ -38,10 +38,13 @@ describe('power management', function () {
         expect(pm.on).to.be.a('function');
         expect(pm.sagaStore).to.be.an('object');
         expect(pm.sagaStore.on).to.be.a('function');
+        expect(pm.revisionGuardStore).to.be.an('object');
+        expect(pm.revisionGuardStore.on).to.be.a('function');
         expect(pm.defineCommand).to.be.a('function');
         expect(pm.defineEvent).to.be.a('function');
         expect(pm.idGenerator).to.be.a('function');
         expect(pm.onCommand).to.be.a('function');
+        expect(pm.onEventMissing).to.be.a('function');
         expect(pm.init).to.be.a('function');
         expect(pm.handle).to.be.a('function');
         
@@ -50,6 +53,10 @@ describe('power management', function () {
         expect(pm.getUndispatchedCommands).to.be.a('function');
         expect(pm.setCommandToDispatched).to.be.a('function');
         expect(pm.removeSaga).to.be.a('function');
+        
+        expect(pm.options.retryOnConcurrencyTimeout).to.eql(800);
+        expect(pm.options.revisionGuard.queueTimeout).to.eql(1000);
+        expect(pm.options.revisionGuard.queueTimeoutMaxLoops).to.eql(3);
 
       });
 
@@ -277,6 +284,31 @@ describe('power management', function () {
 
     });
 
+    describe('defining onEventMissing handler', function () {
+
+      var pm;
+
+      beforeEach(function () {
+        pm = api({ sagaPath: __dirname });
+        pm.onEventMissingHandle = null;
+      });
+
+      it('it should work as expected', function() {
+
+        var called = false;
+        pm.onEventMissing(function (info, evt) {
+          expect(info.in).to.eql('fo');
+          expect(evt.my).to.eql('evt');
+          called = true;
+        });
+
+        pm.onEventMissingHandle({ in: 'fo' }, { my: 'evt' });
+        expect(called).to.eql(true);
+
+      });
+
+    });
+
     describe('initializing', function () {
 
       var pm;
@@ -305,13 +337,16 @@ describe('power management', function () {
           pm.sagaStore.once('connect', function () {
             called++;
           });
+          pm.revisionGuardStore.once('connect', function () {
+            called++;
+          });
           pm.once('connect', function () {
             called++;
           });
 
           pm.init(function (err) {
             expect(err).not.to.be.ok();
-            expect(called).to.eql(2);
+            expect(called).to.eql(3);
             done();
           });
 
@@ -327,12 +362,15 @@ describe('power management', function () {
 
           function check () {
             called++;
-            if (called >= 2) {
+            if (called >= 3) {
               done();
             }
           }
 
           pm.sagaStore.once('connect', function () {
+            check();
+          });
+          pm.revisionGuardStore.once('connect', function () {
             check();
           });
           pm.once('connect', function () {
@@ -349,143 +387,105 @@ describe('power management', function () {
 
     describe('handling an event', function () {
 
-      var pm;
+      describe('not working with revisions', function () {
 
-      beforeEach(function () {
-        pm = api({ sagaPath: __dirname });
-        pm.defineCommand({
-          id: 'i',
-          meta: 'm'
-        });
-        pm.defineEvent({
-          name: 'n',
-          context: 'c',
-          aggregate: 'a',
-          version: 'v',
-          meta: 'm'
-        });
-      });
+        var pm;
 
-      describe('with a callback', function () {
-
-        it('it should work as expected', function (done) {
-
-          var evt = { i: 'evtId', n: 'evtName', ai: 'aggregateId', c: 'context', p: 'payload', r: 'revision', v: 'version', m: 'meta' };
-          var dispatchCalled = false;
-          var sagastoreCalled = [];
-          var onCommandCalled = [];
-
-          pm.onCommand(function (c) {
-            onCommandCalled.push(c);
+        beforeEach(function () {
+          pm = api({sagaPath: __dirname});
+          pm.defineCommand({
+            id: 'i',
+            meta: 'm'
           });
+          pm.defineEvent({
+            name: 'n',
+            context: 'c',
+            aggregate: 'a',
+            version: 'v',
+            meta: 'm'
+          });
+        });
 
-          pm.init(function (err) {
-            expect(err).not.to.be.ok();
+        describe('with a callback', function () {
 
-            pm.eventDispatcher.dispatch = function (e, clb) {
-              dispatchCalled = true;
-              var s1Ret = [{i: '1'}, {i: '2'}];
-              var s2Ret = [{i: '3'}];
-              clb(null, [{ id: 's1',
-                           getUndispatchedCommands: function () { return [].concat(s1Ret); },
-                           removeUnsentCommand: function (c) {
-                             s1Ret.splice(s1Ret.indexOf(c), 1);
-                           },
-                           toJSON: function () {
-                             return { id: 's1' };
-                           },
-                           isDestroyed: function () {
-                             return false;
-                           }
-                         },
-                         { id: 's2',
-                           getUndispatchedCommands: function () { return [].concat(s2Ret); },
-                           removeUnsentCommand: function (c) {
-                             s2Ret.splice(s2Ret.indexOf(c), 1);
-                           },
-                           toJSON: function () {
-                             return { id: 's2' };
-                           },
-                           isDestroyed: function () {
-                             return false;
-                           }
-                         }]);
+          it('it should work as expected', function (done) {
+
+            var evt = {
+              i: 'evtId',
+              n: 'evtName',
+              ai: 'aggregateId',
+              c: 'context',
+              p: 'payload',
+              r: 'revision',
+              v: 'version',
+              m: 'meta'
             };
+            var dispatchCalled = false;
+            var sagastoreCalled = [];
+            var onCommandCalled = [];
 
-            pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
-              sagastoreCalled.push({ sagaId: sId, commandId: cId });
-              clb(null);
-            };
-
-            pm.handle(evt, function (err, cmds, sagaModels) {
-              expect(err).not.to.be.ok();
-              expect(dispatchCalled).to.eql(true);
-              expect(sagastoreCalled.length).to.eql(3);
-              expect(sagastoreCalled[0].sagaId).to.eql('s1');
-              expect(sagastoreCalled[0].commandId).to.eql('1');
-              expect(sagastoreCalled[1].sagaId).to.eql('s1');
-              expect(sagastoreCalled[1].commandId).to.eql('2');
-              expect(sagastoreCalled[2].sagaId).to.eql('s2');
-              expect(sagastoreCalled[2].commandId).to.eql('3');
-              expect(onCommandCalled.length).to.eql(3);
-              expect(onCommandCalled[0].i).to.eql('1');
-              expect(onCommandCalled[1].i).to.eql('2');
-              expect(onCommandCalled[2].i).to.eql('3');
-              expect(cmds.length).to.eql(3);
-              expect(cmds[0].i).to.eql('1');
-              expect(cmds[1].i).to.eql('2');
-              expect(cmds[2].i).to.eql('3');
-              expect(sagaModels.length).to.eql(2);
-              expect(sagaModels[0].id).to.eql('s1');
-              expect(sagaModels[1].id).to.eql('s2');
-
-              done();
+            pm.onCommand(function (c) {
+              onCommandCalled.push(c);
             });
-          });
 
-        });
+            pm.init(function (err) {
+              expect(err).not.to.be.ok();
 
-      });
-
-      describe('with a callback', function () {
-
-        it('it should work as expected', function (done) {
-
-          var evt = { i: 'evtId', n: 'evtName', ai: 'aggregateId', c: 'context', p: 'payload', r: 'revision', v: 'version', m: 'meta' };
-          var dispatchCalled = false;
-          var sagastoreCalled = [];
-          var onCommandCalled = [];
-
-          pm.onCommand(function (c) {
-            onCommandCalled.push(c);
-          });
-
-          pm.init(function (err) {
-            expect(err).not.to.be.ok();
-
-            pm.eventDispatcher.dispatch = function (e, clb) {
-              dispatchCalled = true;
-              var s1Ret = [{i: '1'}, {i: '2'}];
-              var s2Ret = [{i: '3'}];
-              clb(null, [{ id: 's1',
-                getUndispatchedCommands: function () { return [].concat(s1Ret); },
-                removeUnsentCommand: function (c) {
-                  s1Ret.splice(s1Ret.indexOf(c), 1);
-                }
-              },
-                { id: 's2',
-                  getUndispatchedCommands: function () { return [].concat(s2Ret); },
+              pm.eventDispatcher.dispatch = function (e, clb) {
+                dispatchCalled = true;
+                var s1Ret = [{i: '1'}, {i: '2'}];
+                var s2Ret = [{i: '3'}];
+                clb(null, [{
+                  id: 's1',
+                  getUndispatchedCommands: function () {
+                    return [].concat(s1Ret);
+                  },
                   removeUnsentCommand: function (c) {
-                    s2Ret.splice(s2Ret.indexOf(c), 1);
+                    s1Ret.splice(s1Ret.indexOf(c), 1);
+                  },
+                  toJSON: function () {
+                    return {id: 's1'};
+                  },
+                  isDestroyed: function () {
+                    return false;
                   }
-                }]);
-            };
+                },
+                  {
+                    id: 's2',
+                    getUndispatchedCommands: function () {
+                      return [].concat(s2Ret);
+                    },
+                    removeUnsentCommand: function (c) {
+                      s2Ret.splice(s2Ret.indexOf(c), 1);
+                    },
+                    toJSON: function () {
+                      return {id: 's2'};
+                    },
+                    isDestroyed: function () {
+                      return false;
+                    }
+                  }]);
+              };
 
-            pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
-              sagastoreCalled.push({ sagaId: sId, commandId: cId });
-              clb(null);
+              pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
+                sagastoreCalled.push({sagaId: sId, commandId: cId});
+                clb(null);
+              };
 
-              if (sagastoreCalled.length === 3) {
+              var guardCalled = false;
+              var guardDoneCalled = false;
+              pm.revisionGuard = {
+                guard: function (evt, clb) {
+                  guardCalled = true;
+                  clb(null, function (c) {
+                    guardDoneCalled = true;
+                    c(null);
+                  });
+                }
+              };
+
+              pm.handle(evt, function (err, cmds, sagaModels) {
+                expect(err).not.to.be.ok();
                 expect(dispatchCalled).to.eql(true);
                 expect(sagastoreCalled.length).to.eql(3);
                 expect(sagastoreCalled[0].sagaId).to.eql('s1');
@@ -498,12 +498,343 @@ describe('power management', function () {
                 expect(onCommandCalled[0].i).to.eql('1');
                 expect(onCommandCalled[1].i).to.eql('2');
                 expect(onCommandCalled[2].i).to.eql('3');
+                expect(cmds.length).to.eql(3);
+                expect(cmds[0].i).to.eql('1');
+                expect(cmds[1].i).to.eql('2');
+                expect(cmds[2].i).to.eql('3');
+                expect(sagaModels.length).to.eql(2);
+                expect(sagaModels[0].id).to.eql('s1');
+                expect(sagaModels[1].id).to.eql('s2');
+                
+                expect(guardCalled).to.eql(false);
+                expect(guardDoneCalled).to.eql(false);
 
                 done();
-              }
-            };
+              });
+            });
 
-            pm.handle(evt);
+          });
+
+        });
+
+        describe('without a callback', function () {
+
+          it('it should work as expected', function (done) {
+
+            var evt = {
+              i: 'evtId',
+              n: 'evtName',
+              ai: 'aggregateId',
+              c: 'context',
+              p: 'payload',
+              r: 'revision',
+              v: 'version',
+              m: 'meta'
+            };
+            var dispatchCalled = false;
+            var sagastoreCalled = [];
+            var onCommandCalled = [];
+
+            pm.onCommand(function (c) {
+              onCommandCalled.push(c);
+            });
+
+            pm.init(function (err) {
+              expect(err).not.to.be.ok();
+
+              pm.eventDispatcher.dispatch = function (e, clb) {
+                dispatchCalled = true;
+                var s1Ret = [{i: '1'}, {i: '2'}];
+                var s2Ret = [{i: '3'}];
+                clb(null, [{
+                  id: 's1',
+                  getUndispatchedCommands: function () {
+                    return [].concat(s1Ret);
+                  },
+                  removeUnsentCommand: function (c) {
+                    s1Ret.splice(s1Ret.indexOf(c), 1);
+                  }
+                },
+                  {
+                    id: 's2',
+                    getUndispatchedCommands: function () {
+                      return [].concat(s2Ret);
+                    },
+                    removeUnsentCommand: function (c) {
+                      s2Ret.splice(s2Ret.indexOf(c), 1);
+                    }
+                  }]);
+              };
+
+              pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
+                sagastoreCalled.push({sagaId: sId, commandId: cId});
+                clb(null);
+
+                if (sagastoreCalled.length === 3) {
+                  expect(dispatchCalled).to.eql(true);
+                  expect(sagastoreCalled.length).to.eql(3);
+                  expect(sagastoreCalled[0].sagaId).to.eql('s1');
+                  expect(sagastoreCalled[0].commandId).to.eql('1');
+                  expect(sagastoreCalled[1].sagaId).to.eql('s1');
+                  expect(sagastoreCalled[1].commandId).to.eql('2');
+                  expect(sagastoreCalled[2].sagaId).to.eql('s2');
+                  expect(sagastoreCalled[2].commandId).to.eql('3');
+                  expect(onCommandCalled.length).to.eql(3);
+                  expect(onCommandCalled[0].i).to.eql('1');
+                  expect(onCommandCalled[1].i).to.eql('2');
+                  expect(onCommandCalled[2].i).to.eql('3');
+
+                  expect(guardCalled).to.eql(false);
+                  expect(guardDoneCalled).to.eql(false);
+
+                  done();
+                }
+              };
+
+              var guardCalled = false;
+              var guardDoneCalled = false;
+              pm.revisionGuard = {
+                guard: function (evt, clb) {
+                  guardCalled = true;
+                  clb(null, function (c) {
+                    guardDoneCalled = true;
+                    c(null);
+                  });
+                }
+              };
+
+              pm.handle(evt);
+            });
+
+          });
+
+        });
+
+      });
+
+      describe('working with revisions', function () {
+
+        var pm;
+
+        beforeEach(function () {
+          pm = api({sagaPath: __dirname});
+          pm.defineCommand({
+            id: 'i',
+            meta: 'm'
+          });
+          pm.defineEvent({
+            name: 'n',
+            context: 'c',
+            aggregate: 'a',
+            aggregateId: 'ai',
+            revision: 'r',
+            version: 'v',
+            meta: 'm'
+          });
+        });
+
+        describe('with a callback', function () {
+
+          it('it should work as expected', function (done) {
+
+            var evt = {
+              i: 'evtId',
+              n: 'evtName',
+              ai: 'aggregateId',
+              c: 'context',
+              p: 'payload',
+              r: 'revision',
+              v: 'version',
+              m: 'meta'
+            };
+            var dispatchCalled = false;
+            var sagastoreCalled = [];
+            var onCommandCalled = [];
+
+            pm.onCommand(function (c) {
+              onCommandCalled.push(c);
+            });
+
+            pm.init(function (err) {
+              expect(err).not.to.be.ok();
+
+              pm.eventDispatcher.dispatch = function (e, clb) {
+                dispatchCalled = true;
+                var s1Ret = [{i: '1'}, {i: '2'}];
+                var s2Ret = [{i: '3'}];
+                clb(null, [{
+                  id: 's1',
+                  getUndispatchedCommands: function () {
+                    return [].concat(s1Ret);
+                  },
+                  removeUnsentCommand: function (c) {
+                    s1Ret.splice(s1Ret.indexOf(c), 1);
+                  },
+                  toJSON: function () {
+                    return {id: 's1'};
+                  },
+                  isDestroyed: function () {
+                    return false;
+                  }
+                },
+                  {
+                    id: 's2',
+                    getUndispatchedCommands: function () {
+                      return [].concat(s2Ret);
+                    },
+                    removeUnsentCommand: function (c) {
+                      s2Ret.splice(s2Ret.indexOf(c), 1);
+                    },
+                    toJSON: function () {
+                      return {id: 's2'};
+                    },
+                    isDestroyed: function () {
+                      return false;
+                    }
+                  }]);
+              };
+
+              pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
+                sagastoreCalled.push({sagaId: sId, commandId: cId});
+                clb(null);
+              };
+
+              var guardCalled = false;
+              var guardDoneCalled = false;
+              pm.revisionGuard = {
+                guard: function (evt, clb) {
+                  expect(evt.n).to.eql('evtName');
+                  guardCalled = true;
+                  clb(null, function (c) {
+                    guardDoneCalled = true;
+                    c(null);
+                  });
+                }
+              };
+
+              pm.handle(evt, function (err, cmds, sagaModels) {
+                expect(err).not.to.be.ok();
+                expect(dispatchCalled).to.eql(true);
+                expect(sagastoreCalled.length).to.eql(3);
+                expect(sagastoreCalled[0].sagaId).to.eql('s1');
+                expect(sagastoreCalled[0].commandId).to.eql('1');
+                expect(sagastoreCalled[1].sagaId).to.eql('s1');
+                expect(sagastoreCalled[1].commandId).to.eql('2');
+                expect(sagastoreCalled[2].sagaId).to.eql('s2');
+                expect(sagastoreCalled[2].commandId).to.eql('3');
+                expect(onCommandCalled.length).to.eql(3);
+                expect(onCommandCalled[0].i).to.eql('1');
+                expect(onCommandCalled[1].i).to.eql('2');
+                expect(onCommandCalled[2].i).to.eql('3');
+                expect(cmds.length).to.eql(3);
+                expect(cmds[0].i).to.eql('1');
+                expect(cmds[1].i).to.eql('2');
+                expect(cmds[2].i).to.eql('3');
+                expect(sagaModels.length).to.eql(2);
+                expect(sagaModels[0].id).to.eql('s1');
+                expect(sagaModels[1].id).to.eql('s2');
+
+                expect(guardCalled).to.eql(true);
+                expect(guardDoneCalled).to.eql(true);
+
+                done();
+              });
+            });
+
+          });
+
+        });
+
+        describe('without a callback', function () {
+
+          it('it should work as expected', function (done) {
+
+            var evt = {
+              i: 'evtId',
+              n: 'evtName',
+              ai: 'aggregateId',
+              c: 'context',
+              p: 'payload',
+              r: 'revision',
+              v: 'version',
+              m: 'meta'
+            };
+            var dispatchCalled = false;
+            var sagastoreCalled = [];
+            var onCommandCalled = [];
+
+            pm.onCommand(function (c) {
+              onCommandCalled.push(c);
+            });
+
+            pm.init(function (err) {
+              expect(err).not.to.be.ok();
+
+              pm.eventDispatcher.dispatch = function (e, clb) {
+                dispatchCalled = true;
+                var s1Ret = [{i: '1'}, {i: '2'}];
+                var s2Ret = [{i: '3'}];
+                clb(null, [{
+                  id: 's1',
+                  getUndispatchedCommands: function () {
+                    return [].concat(s1Ret);
+                  },
+                  removeUnsentCommand: function (c) {
+                    s1Ret.splice(s1Ret.indexOf(c), 1);
+                  }
+                },
+                  {
+                    id: 's2',
+                    getUndispatchedCommands: function () {
+                      return [].concat(s2Ret);
+                    },
+                    removeUnsentCommand: function (c) {
+                      s2Ret.splice(s2Ret.indexOf(c), 1);
+                    }
+                  }]);
+              };
+
+              pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
+                sagastoreCalled.push({sagaId: sId, commandId: cId});
+                clb(null);
+
+                if (sagastoreCalled.length === 3) {
+                  expect(dispatchCalled).to.eql(true);
+                  expect(sagastoreCalled.length).to.eql(3);
+                  expect(sagastoreCalled[0].sagaId).to.eql('s1');
+                  expect(sagastoreCalled[0].commandId).to.eql('1');
+                  expect(sagastoreCalled[1].sagaId).to.eql('s1');
+                  expect(sagastoreCalled[1].commandId).to.eql('2');
+                  expect(sagastoreCalled[2].sagaId).to.eql('s2');
+                  expect(sagastoreCalled[2].commandId).to.eql('3');
+                  expect(onCommandCalled.length).to.eql(3);
+                  expect(onCommandCalled[0].i).to.eql('1');
+                  expect(onCommandCalled[1].i).to.eql('2');
+                  expect(onCommandCalled[2].i).to.eql('3');
+
+                  expect(guardCalled).to.eql(true);
+                  expect(guardDoneCalled).to.eql(true);
+
+                  done();
+                }
+              };
+
+              var guardCalled = false;
+              var guardDoneCalled = false;
+              pm.revisionGuard = {
+                guard: function (evt, clb) {
+                  expect(evt.n).to.eql('evtName');
+                  guardCalled = true;
+                  clb(null, function (c) {
+                    guardDoneCalled = true;
+                    c(null);
+                  });
+                }
+              };
+
+              pm.handle(evt);
+            });
+
           });
 
         });

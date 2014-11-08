@@ -15,6 +15,8 @@ describe('integration', function () {
       name: 'name',
       context: 'context.name',
       aggregate: 'aggregate.name',
+      aggregateId: 'aggregate.id',
+      revision: 'aggregate.revision',
       version: 'version',
       meta: 'meta'
     });
@@ -119,7 +121,8 @@ describe('integration', function () {
         name: 'orderCreated',
         aggregate: {
           name: 'order',
-          id: 'orderAggId'
+          id: 'orderAggId',
+          revision: 1
         },
         context: {
           name: 'sale'
@@ -181,7 +184,8 @@ describe('integration', function () {
           name: 'seatsReserved',
           aggregate: {
             name: 'reservation',
-            id: 'aggId'
+            id: 'seatsAggId',
+            revision: 1
           },
           context: {
             name: 'sale'
@@ -239,7 +243,8 @@ describe('integration', function () {
             name: 'paymentAccepted',
             aggregate: {
               name: 'payment',
-              id: 'aggId'
+              id: 'payAggId',
+              revision: 1
             },
             context: {
               name: 'sale'
@@ -292,7 +297,8 @@ describe('integration', function () {
               name: 'orderConfirmed',
               aggregate: {
                 name: 'order',
-                id: 'orderAggId'
+                id: 'orderAggId',
+                revision: 2
               },
               context: {
                 name: 'sale'
@@ -320,6 +326,51 @@ describe('integration', function () {
               done();
             });
 
+          });
+
+          describe('handling an event that was already handled', function () {
+
+            it('it should not publish anything and callback with an error', function (done) {
+
+              var publishedCommands = [];
+
+              pm.onCommand(function (cmd) {
+                publishedCommands.push(cmd);
+              });
+
+              var evt = {
+                name: 'seatsReserved',
+                aggregate: {
+                  name: 'reservation',
+                  id: 'seatsAggId',
+                  revision: 1
+                },
+                context: {
+                  name: 'sale'
+                },
+                version: 0,
+                payload: {
+                  transactionId: transactionId
+                },
+                meta: {
+                  userId: 'userId'
+                }
+              };
+
+              pm.handle(evt, function (errs, cmds, sagaModels) {
+                expect(errs).to.be.ok();
+                expect(errs.length).to.eql(1);
+                expect(errs[0].name).to.eql('AlreadyHandledError');
+                expect(cmds).not.to.be.ok();
+                expect(sagaModels).not.to.be.ok();
+
+                expect(publishedCommands.length).to.eql(0);
+
+                done();
+              });
+
+            });
+            
           });
 
         });

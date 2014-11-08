@@ -2,7 +2,7 @@ var expect = require('expect.js'),
   async = require('async'),
   _ = require('lodash'),
   sagastore = require('../../lib/store'),
-  ConcurrencyError = require('../../lib/concurrencyError'),
+  ConcurrencyError = require('../../lib/errors/concurrencyError'),
   Base = require('../../lib/store/base'),
   InMemory = require('../../lib/store/databases/inmemory');
 

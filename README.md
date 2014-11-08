@@ -47,6 +47,23 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	    prefix: 'domain_saga',                      // optional
 	    timeout: 10000                              // optional
 	    // password: 'secret'                          // optional
+	  },
+	        	  
+	  // optional, default is in-memory
+	  // the revisionguard only works if aggregateId and revision are defined in event definition
+	  // currently supports: mongodb, redis, tingodb and inmemory
+	  // hint settings like: [eventstore](https://github.com/adrai/node-eventstore#provide-implementation-for-storage)
+	  revisionGuard: {
+	  	queueTimeout: 1000,                         // optional, timeout for non-handled events in the internal in-memory queue
+	  	queueTimeoutMaxLoops: 3                     // optional, maximal loop count for non-handled event in the internal in-memory queue
+	  	
+	  	type: 'redis',
+	  	host: 'localhost',                          // optional
+	  	port: 6379,                                 // optional
+	  	db: 0,                                      // optional
+	  	prefix: 'readmodel_revision',               // optional
+	  	timeout: 10000                              // optional
+	  	// password: 'secret'                          // optional
 	  }
 	});
 
@@ -62,8 +79,17 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	  console.log('sagaStore disconnected');
 	});
 	
+	// revisionGuardStore
+	pm.revisionGuardStore.on('connect', function() {
+	  console.log('revisionGuardStore connected');
+	});
 	
-	// anything (at the moment only sagaStore)
+	pm.revisionGuardStore.on('disconnect', function() {
+	  console.log('revisionGuardStore disconnected');
+	});
+	
+	
+	// anything (sagaStore or revisionGuardStore)
 	pm.on('connect', function() {
 	  console.log('something connected');
 	});
@@ -85,6 +111,13 @@ The values describes the path to that property in the event message.
 	  
 	  // optional, only makes sense if aggregates with names are defined in the 'domainPath' structure
 	  aggregate: 'aggregate.name',
+	  
+	  // optional, default is 'aggregate.id'
+	  aggregateId: 'aggregate.id',
+	  
+	  // optional, default is 'revision'
+	  // will represent the aggregate revision, can be used in next command
+	  revision: 'revision',
 	  
 	  // optional
 	  version: 'version',
@@ -139,6 +172,25 @@ The values describes the path to that property in the command message.
 	  bus.emit('command', cmd, function ack () {
 	    callback();
 	  });
+	});
+
+
+## Wire up event missing [optional]
+### you can define a synchronous function
+
+	pm.onEventMissing(function (info, evt) {
+	   	  
+		// grab the missing events, depending from info values...
+		// info.aggregateId
+		// info.aggregateRevision
+		// info.aggregate
+		// info.context
+		// info.guardRevision
+		// and call handle...
+		pm.handle(missingEvent, function (err) {
+			if (err) { console.log(err); }
+		});
+		
 	});
 
 
