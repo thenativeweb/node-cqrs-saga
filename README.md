@@ -25,7 +25,7 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	  retryOnConcurrencyTimeout: 1000,
 	  
 	  // optional, default is in-memory
-	  // currently supports: mongodb, redis and inmemory
+	  // currently supports: mongodb, redis, azuretable and inmemory
 	  // hint settings like: [eventstore](https://github.com/adrai/node-eventstore#provide-implementation-for-storage)
 	  // mongodb:
 	  sagaStore: {
@@ -51,7 +51,7 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	        	  
 	  // optional, default is in-memory
 	  // the revisionguard only works if aggregateId and revision are defined in event definition
-	  // currently supports: mongodb, redis, tingodb and inmemory
+	  // currently supports: mongodb, redis, tingodb, azuretable and inmemory
 	  // hint settings like: [eventstore](https://github.com/adrai/node-eventstore#provide-implementation-for-storage)
 	  revisionGuard: {
 	  	queueTimeout: 1000,                         // optional, timeout for non-handled events in the internal in-memory queue
