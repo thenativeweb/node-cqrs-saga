@@ -77,7 +77,7 @@ describe('revisionGuardStore', function() {
 
     describe('with options containing a type property with the value of', function() {
 
-      var types = ['inmemory', 'azuretable'/*, 'mongodb', 'tingodb', 'redis', 'couchdb'*/];
+      var types = ['inmemory', 'azuretable', 'mongodb', 'tingodb', 'redis', 'couchdb'];
 
       types.forEach(function(type) {
 
