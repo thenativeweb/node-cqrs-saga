@@ -130,7 +130,11 @@ describe('revisionGuard', function () {
       var evt1 = {
         id: 'evtId1',
         aggregate: {
-          id: 'aggId1'
+          id: 'aggId1',
+          name: 'agg'
+        },
+        context: {
+          name: 'ctx'
         },
         revision: 1
       };
@@ -138,7 +142,11 @@ describe('revisionGuard', function () {
       var evt2 = {
         id: 'evtId2',
         aggregate: {
-          id: 'aggId1'
+          id: 'aggId1',
+          name: 'agg'
+        },
+        context: {
+          name: 'ctx'
         },
         revision: 2
       };
