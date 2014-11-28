@@ -47,13 +47,13 @@ describe('power management', function () {
         expect(pm.onEventMissing).to.be.a('function');
         expect(pm.init).to.be.a('function');
         expect(pm.handle).to.be.a('function');
-        
+
         expect(pm.getTimeoutedSagas).to.be.a('function');
         expect(pm.getOlderSagas).to.be.a('function');
         expect(pm.getUndispatchedCommands).to.be.a('function');
         expect(pm.setCommandToDispatched).to.be.a('function');
         expect(pm.removeSaga).to.be.a('function');
-        
+
         expect(pm.options.retryOnConcurrencyTimeout).to.eql(800);
         expect(pm.options.revisionGuard.queueTimeout).to.eql(1000);
         expect(pm.options.revisionGuard.queueTimeoutMaxLoops).to.eql(3);
@@ -505,7 +505,7 @@ describe('power management', function () {
                 expect(sagaModels.length).to.eql(2);
                 expect(sagaModels[0].id).to.eql('s1');
                 expect(sagaModels[1].id).to.eql('s2');
-                
+
                 expect(guardCalled).to.eql(false);
                 expect(guardDoneCalled).to.eql(false);
 
@@ -842,7 +842,7 @@ describe('power management', function () {
       });
 
     });
-    
+
     describe('having nothing in the saga store', function () {
 
       var pm;
@@ -851,9 +851,9 @@ describe('power management', function () {
         pm = api({ sagaPath: __dirname });
         pm.init(done);
       });
-      
+
       describe('calling getTimeoutedSagas', function () {
-        
+
         it('it should work as expected', function (done) {
 
           pm.getTimeoutedSagas(function(err, sagas) {
@@ -862,9 +862,9 @@ describe('power management', function () {
             expect(sagas).to.have.length(0);
             done();
           });
-          
+
         });
-        
+
       });
 
       describe('calling getOlderSagas', function() {
@@ -1028,7 +1028,7 @@ describe('power management', function () {
 
         saga4 = { id: 'sagaId4', _commitStamp: new Date(2014, 3, 7), data: 'sagaData4' };
         cmds4 = [];
-        
+
         pm.sagaStore.clear(function () {
           async.series([
             function (callback) {
@@ -1065,7 +1065,7 @@ describe('power management', function () {
         });
 
         describe('calling commit on a saga object', function () {
-          
+
           describe('with a callback', function () {
 
             it('it should callback with an error', function (done) {
@@ -1081,7 +1081,7 @@ describe('power management', function () {
               });
 
             });
-            
+
           });
 
           describe('without a callback', function () {
@@ -1096,6 +1096,39 @@ describe('power management', function () {
                   sagas[0].commit();
                 }).to.throwError(/remove/);
                 done();
+              });
+
+            });
+
+          });
+
+          describe('having added commands to send', function () {
+
+            it('it should work as expected', function (done) {
+
+              pm.getTimeoutedSagas(function (err, sagas) {
+                expect(err).not.to.be.ok();
+                expect(sagas).to.be.an('array');
+                expect(sagas.length).to.eql(1);
+                sagas[0].addCommandToSend({ id: 'newId', name: 'newCommand' });
+                sagas[0].commit(function (err) {
+                  expect(err).not.to.be.ok();
+
+                  pm.getTimeoutedSagas(function (err, sagas) {
+                    expect(err).not.to.be.ok();
+                    expect(sagas).to.be.an('array');
+                    expect(sagas.length).to.eql(1);
+                    pm.getUndispatchedCommands(function (err, cmds) {
+                      var cmd = cmds[3];
+                      expect(cmd.sagaId).to.eql('sagaId2');
+                      expect(cmd.commandId).to.eql('newId');
+                      expect(cmd.commitStamp).to.be.ok();
+                      expect(cmd.command.id).to.eql('newId');
+                      expect(cmd.command.name).to.eql('newCommand');
+                      done();
+                    });
+                  });
+                });
               });
 
             });

@@ -1,3 +1,7 @@
+## [v1.1.3](https://github.com/adrai/node-cqrs-saga/compare/v1.1.2...v1.1.3)
+- added commitstamp to getUndispatchedcommands
+- added possibility to addCommandToSend for timeoutedSagas
+
 ## [v1.1.2](https://github.com/adrai/node-cqrs-saga/compare/v1.1.1...v1.1.2)
 - handle case of same aggregateId in different contexts or aggregates
 

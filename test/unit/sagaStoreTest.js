@@ -218,7 +218,7 @@ describe('sagaStore', function() {
                 before(function(done) {
                   store.clear(done);
                 });
-                
+
                 describe('calling get', function() {
 
                   describe('without a valid id', function () {
@@ -250,7 +250,7 @@ describe('sagaStore', function() {
                   });
 
                 });
-                
+
                 describe('calling getTimeoutedSagas', function() {
 
                   it('it should callback with an empty array', function(done) {
@@ -282,9 +282,9 @@ describe('sagaStore', function() {
                 });
 
                 describe('calling getOlderSagas', function() {
-                  
+
                   describe('without a valid date object', function () {
-                    
+
                     it('it should callback with an error', function (done) {
 
                       store.getOlderSagas({}, function(err, sagas) {
@@ -293,9 +293,9 @@ describe('sagaStore', function() {
                         expect(sagas).not.to.be.ok();
                         done();
                       });
-                      
+
                     });
-                    
+
                   });
 
                   describe('with a valid date object', function () {
@@ -466,7 +466,7 @@ describe('sagaStore', function() {
 
                   saga4 = { id: 'sagaId4', _commitStamp: new Date(2014, 3, 7), data: 'sagaData4' };
                   cmds4 = [];
-                  
+
                   store.clear(function () {
                     async.series([
                       function (callback) {
@@ -486,7 +486,7 @@ describe('sagaStore', function() {
                 });
 
                 describe('calling get', function () {
-                  
+
                   it('it should callback the requested saga object', function (done) {
 
                     store.get('sagaId1', function (err, saga) {
@@ -498,9 +498,9 @@ describe('sagaStore', function() {
                       expect(saga.data).to.eql(saga1.data);
                       done();
                     });
-                    
+
                   });
-                  
+
                 });
 
                 describe('calling getTimeoutedSagas', function () {
@@ -521,37 +521,41 @@ describe('sagaStore', function() {
                   });
 
                 });
-                
+
                 describe('calling getUndispatchedCommands', function () {
-                  
+
                   it('it should callback with the expected commands', function (done) {
-                    
+
                     store.getUndispatchedCommands(function (err, cmds) {
                       expect(err).not.to.be.ok();
                       expect(cmds).to.be.an('array');
                       expect(cmds.length).to.eql(4);
                       expect(cmds[0].sagaId).to.eql(saga1.id);
                       expect(cmds[0].commandId).to.eql(cmds1[0].id);
+                      expect(cmds[0].commitStamp.getTime()).to.eql(saga1._commitStamp.getTime());
                       expect(cmds[0].command.id).to.eql(cmds1[0].payload.id);
                       expect(cmds[0].command.data).to.eql(cmds1[0].payload.data);
                       expect(cmds[1].sagaId).to.eql(saga2.id);
                       expect(cmds[1].commandId).to.eql(cmds2[0].id);
+                      expect(cmds[1].commitStamp.getTime()).to.eql(saga2._commitStamp.getTime());
                       expect(cmds[1].command.id).to.eql(cmds2[0].payload.id);
                       expect(cmds[1].command.data).to.eql(cmds2[0].payload.data);
                       expect(cmds[2].sagaId).to.eql(saga2.id);
                       expect(cmds[2].commandId).to.eql(cmds2[1].id);
+                      expect(cmds[2].commitStamp.getTime()).to.eql(saga2._commitStamp.getTime());
                       expect(cmds[2].command.id).to.eql(cmds2[1].payload.id);
                       expect(cmds[2].command.data).to.eql(cmds2[1].payload.data);
                       expect(cmds[3].sagaId).to.eql(saga3.id);
                       expect(cmds[3].commandId).to.eql(cmds3[0].id);
+                      expect(cmds[3].commitStamp.getTime()).to.eql(saga3._commitStamp.getTime());
                       expect(cmds[3].command.id).to.eql(cmds3[0].payload.id);
                       expect(cmds[3].command.data).to.eql(cmds3[0].payload.data);
 
                       done();
                     });
-                    
+
                   });
-                  
+
                 });
 
                 describe('calling getOlderSagas', function () {
@@ -579,9 +583,9 @@ describe('sagaStore', function() {
                 });
 
                 describe('calling setCommandToDispatched', function () {
-                  
+
                   it('it should remove this command from store', function (done) {
-                    
+
                     store.setCommandToDispatched('cmdId2', 'sagaId2', function (err) {
                       expect(err).not.to.be.ok();
 
@@ -605,9 +609,9 @@ describe('sagaStore', function() {
                         done();
                       });
                     });
-                    
+
                   });
-                  
+
                 });
 
                 describe('calling remove', function () {
@@ -625,7 +629,7 @@ describe('sagaStore', function() {
                           expect(err).not.to.be.ok();
                           expect(sagas).to.be.an('array');
                           expect(sagas.length).to.eql(0);
-                          
+
                           store.getOlderSagas(new Date(2314, 3, 17), function (err, sagas) {
                             expect(err).not.to.be.ok();
                             expect(sagas).to.be.an('array');
@@ -640,7 +644,7 @@ describe('sagaStore', function() {
                             expect(sagas[2].id).to.eql(saga4.id);
                             expect(sagas[2]._commitStamp.getTime()).to.eql(saga4._commitStamp.getTime());
                             expect(sagas[2].data).to.eql(saga4.data);
-                            
+
                             store.getUndispatchedCommands(function (err, cmds) {
                               expect(err).not.to.be.ok();
                               expect(cmds).to.be.an('array');
@@ -653,7 +657,7 @@ describe('sagaStore', function() {
                               expect(cmds[1].commandId).to.eql(cmds3[0].id);
                               expect(cmds[1].command.id).to.eql(cmds3[0].payload.id);
                               expect(cmds[1].command.data).to.eql(cmds3[0].payload.data);
-                              
+
                               done();
                             });
                           });
@@ -664,7 +668,7 @@ describe('sagaStore', function() {
                   });
 
                 });
-                
+
                 describe('calling save', function () {
 
                   describe('but beeing updated by someone else in the meantime', function () {
@@ -674,9 +678,9 @@ describe('sagaStore', function() {
                       store.get('sagaId4', function (err, saga) {
                         expect(err).not.to.be.ok();
                         var org = _.cloneDeep(saga);
-                        
+
                         saga.n = 'new';
-                        
+
                         store.save(saga, [], function (err) {
                           expect(err).not.to.be.ok();
                           org.n = 'other';

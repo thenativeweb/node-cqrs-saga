@@ -17,13 +17,13 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	  // can be structured like
 	  // [set 1](https://github.com/adrai/node-cqrs-saga/tree/master/test/integration/fixture)
 	  sagaPath: '/path/to/my/files',
-	  
+
 	  // optional, default is 800
 	  // if using in scaled systems and not guaranteeing that each event for a saga "instance"
 	  // dispatches to the same worker process, this module tries to catch the concurrency issues and
 	  // retries to handle the event after a timeout between 0 and the defined value
 	  retryOnConcurrencyTimeout: 1000,
-	  
+
 	  // optional, default is in-memory
 	  // currently supports: mongodb, redis, azuretable and inmemory
 	  // hint settings like: [eventstore](https://github.com/adrai/node-eventstore#provide-implementation-for-storage)
@@ -48,7 +48,7 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	    timeout: 10000                              // optional
 	    // password: 'secret'                          // optional
 	  },
-	        	  
+
 	  // optional, default is in-memory
 	  // the revisionguard only works if aggregateId and revision are defined in event definition
 	  // currently supports: mongodb, redis, tingodb, azuretable and inmemory
@@ -56,7 +56,7 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	  revisionGuard: {
 	  	queueTimeout: 1000,                         // optional, timeout for non-handled events in the internal in-memory queue
 	  	queueTimeoutMaxLoops: 3                     // optional, maximal loop count for non-handled event in the internal in-memory queue
-	  	
+
 	  	type: 'redis',
 	  	host: 'localhost',                          // optional
 	  	port: 6379,                                 // optional
@@ -74,26 +74,26 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	pm.sagaStore.on('connect', function() {
 	  console.log('sagaStore connected');
 	});
-	
+
 	pm.sagaStore.on('disconnect', function() {
 	  console.log('sagaStore disconnected');
 	});
-	
+
 	// revisionGuardStore
 	pm.revisionGuardStore.on('connect', function() {
 	  console.log('revisionGuardStore connected');
 	});
-	
+
 	pm.revisionGuardStore.on('disconnect', function() {
 	  console.log('revisionGuardStore disconnected');
 	});
-	
-	
+
+
 	// anything (sagaStore or revisionGuardStore)
 	pm.on('connect', function() {
 	  console.log('something connected');
 	});
-	
+
 	pm.on('disconnect', function() {
 	  console.log('something disconnected');
 	});
@@ -105,23 +105,23 @@ The values describes the path to that property in the event message.
 	pm.defineEvent({
 	  // optional, default is 'name'
 	  name: 'name',
-	  
-	  // optional, only makes sense if contexts are defined in the 'domainPath' structure 
+
+	  // optional, only makes sense if contexts are defined in the 'domainPath' structure
 	  context: 'context.name',
-	  
+
 	  // optional, only makes sense if aggregates with names are defined in the 'domainPath' structure
 	  aggregate: 'aggregate.name',
-	  
+
 	  // optional, default is 'aggregate.id'
 	  aggregateId: 'aggregate.id',
-	  
+
 	  // optional, default is 'revision'
 	  // will represent the aggregate revision, can be used in next command
 	  revision: 'revision',
-	  
+
 	  // optional
 	  version: 'version',
-	  
+
 	  // optional, if defined theses values will be copied to the command (can be used to transport information like userId, etc..)
 	  meta: 'meta'
 	});
@@ -133,7 +133,7 @@ The values describes the path to that property in the command message.
 	pm.defineCommand({
 	  // optional, default is 'id'
 	  id: 'id',
-	  
+
 	  // optional, if defined the values of the event will be copied to the command (can be used to transport information like userId, etc..)
 	  meta: 'meta'
 	});
@@ -164,7 +164,7 @@ The values describes the path to that property in the command message.
 	pm.onCommand(function (cmd) {
 	  bus.emit('command', cmd);
 	});
-	
+
 ### or you can define an asynchronous function
 
 	// pass commands to bus
@@ -179,7 +179,7 @@ The values describes the path to that property in the command message.
 ### you can define a synchronous function
 
 	pm.onEventMissing(function (info, evt) {
-	   	  
+
 		// grab the missing events, depending from info values...
 		// info.aggregateId
 		// info.aggregateRevision
@@ -190,18 +190,18 @@ The values describes the path to that property in the command message.
 		pm.handle(missingEvent, function (err) {
 			if (err) { console.log(err); }
 		});
-		
+
 	});
 
 
 ## Initialization
-	
+
 	pm.init(function (err) {
 	  // this callback is called when all is ready...
 	});
-	
+
 	// or
-	
+
 	pm.init(); // callback is optional
 
 
@@ -227,9 +227,9 @@ The values describes the path to that property in the command message.
 	    userId: 'ccd65819-4da4-4df9-9f24-5b10bf89ef89'
 	  }
 	}); // callback is optional
-	
+
 ### or
-	
+
 	pm.handle({
 	  id: 'b80ade36-dd05-4340-8a8b-846eea6e286f',
 	  name: 'orderCreated',
@@ -257,9 +257,9 @@ The values describes the path to that property in the command message.
 	  //
 	  // cmds: same as passed in 'onCommand' function
 	});
-	
+
 ### more infos, can be useful if testing
-	
+
 	pm.handle({
 	  id: 'b80ade36-dd05-4340-8a8b-846eea6e286f',
 	  name: 'orderCreated',
@@ -280,10 +280,10 @@ The values describes the path to that property in the command message.
 	}, function (errs, cmds, sagaModels) {
 	  // this callback is called when event is handled successfully or unsuccessfully
 	  // errs: is the same as described before
-	  
+
 	  // cmds: same as passed in 'onCommand' function
 	  // cmds: in case of no error or in case of error here is the array of all commands that should be published
-	  
+
 	  // sagaModels: represents the saga data after have handled the event
 	});
 
@@ -295,41 +295,41 @@ The values describes the path to that property in the command message.
 	module.exports = require('cqrs-saga').defineSaga({
 	  // optional, default is file name without extension
 	  name: 'orderCreated',
-	  
+
 	  // optional
 	  aggregate: 'order',
-	  
+
 	  // optional
 	  context: 'sale',
-	  
+
 	  // optional, default 0
 	  version: 1,
-	  
+
 	  // optional, default false
 	  // if true it will check if there is already a saga in the db and only if there is something it will continue...
 	  existing: false,
-	  
+
 	  // optional, will catch the event only if it contains the defined properties
 	  containingProperties: ['aggregate.id', 'payload.totalCosts', 'payload.seats'],
-	  
+
 	  // optional, if not defined it will pass the whole event...
 	  payload: 'payload',
-	  
+
 	  // optional, if not defined it will generate a new id
 	  // it will try to load the saga from the db by this id
 	  id: 'aggregate.id',
-	  
+
 	  // optional, default Infinity, all sagas will be sorted by this value
 	  priority: 1
 	}, function (evt, saga, callback) {
-	
+
 	  saga.set('orderId', evt.aggregate.id);
 	  saga.set('totalCosts', evt.payload.totalCosts);
 	  // or
 	  // saga.set({ orderId: evt.aggregate.id, totalCosts: evt.payload.totalCosts });
-	
+
 	  var cmd = {
-	  
+
 	    // if you don't pass an id it will generate a new one
 	    id: 'my own command id',
 	    name: 'makeReservation',
@@ -343,20 +343,20 @@ The values describes the path to that property in the command message.
 	      transactionId: saga.id,
 	      seats: saga.has('seats') ? saga.get('seats') : evt.payload.seats
 	    },
-	    
+
 	    // to transport meta infos (like userId)...
 	    // if not defined, it will use the meta value of the event
 	    meta: evt.meta
 	  };
-	
+
 	  saga.addCommandToSend(cmd);
-	
+
 	  // optionally define a timeout
 	  // this can be useful if you have an other process that will fetch timeouted sagas
 	  var tomorrow = new Date();
-	  tomorrow.setDate((new Date()).getDate() + 1); 
+	  tomorrow.setDate((new Date()).getDate() + 1);
 	  var timeoutCmd = {
-	  
+
 	    // if you don't pass an id it will generate a new one
 	    id: 'my own command id',
 	    name: 'cancelOrder',
@@ -370,7 +370,7 @@ The values describes the path to that property in the command message.
 	    payload: {
 	      transactionId: saga.id
 	    },
-	    
+
 	    // to transport meta infos (like userId)...
 	    // if not defined, it will use the meta value of the event
 	    meta: evt.meta
@@ -380,7 +380,7 @@ The values describes the path to that property in the command message.
 	  // saga.defineTimeout(tomorrow, timeoutCmd);
 	  // or
 	  // saga.defineTimeout(tomorrow);
-	
+
 	  saga.commit(callback);
 	});
 	// optional define a function to that returns an id that will be used as saga id
@@ -400,14 +400,27 @@ Use this function to get all timeouted sagas.
 
 	pm.getTimeoutedSagas(function (err, sagas) {
 	  if (err) { return console.log('ohh!'); }
-	  
+
 	  sagas.forEach(function (saga) {
 	    // saga.id...
 	    // saga.getTimeoutAt();
-	    // saga.getTimeoutCommands();
-	    
-	    // if saga does not clean itself after timouted and/or no commands are defined, then:
-	    pm.removeSaga(saga || saga.id, function (err) {});
+	    var cmds = saga.getTimeoutCommands();
+
+	    cmds.forEach(function (cmd) {
+	    	saga.addCommandToSend(cmd);
+	    });
+
+	    saga.commit(function (err) {
+	    	cmds.forEach(function (cmd) {
+	    		// publish cmd...
+	    		// msgBus.send(cmd);
+	    		// ... and set to dispatched...
+	    		pm.setCommandToDispatched(cmd.id, saga.id, function (err) {});
+	    	});
+	    });
+
+	    // or if saga does not clean itself after timouted and/or no commands are defined, then:
+	    // pm.removeSaga(saga || saga.id, function (err) {});
 	    // or
 	    // saga.destroy();
 	    // saga.commit(function (err) {});
@@ -419,12 +432,12 @@ Use this function to get all sagas that are older then the passed date.
 
 	pm.getOlderSagas(new Date(2010, 2, 4), function (err, sagas) {
 	  if (err) { return console.log('ohh!'); }
-	  
+
 	  sagas.forEach(function (saga) {
 	    // saga.id...
 	    // saga.getTimeoutAt();
 	    // saga.getTimeoutCommands();
-	    
+
 	    // if saga does not clean itself after timouted and/or no commands are defined, then:
 	    pm.removeSaga(saga || saga.id, function (err) {});
 	    // or
@@ -440,10 +453,10 @@ Use setCommandToDispatched to mark a command as dispatched. (will remove it from
 
 	pm.getUndispatchedCommands(function (err, cmds) {
 	  if (err) { return console.log('ohh!'); }
-	  
+
 	  cmds.forEach(function (cmd) {
-	    // cmd is: { sagaId: 'the id of the saga', commandId: 'the id of the command', command: { /* the command */ } }
-	    
+	    // cmd is: { sagaId: 'the id of the saga', commandId: 'the id of the command', commitStamp: 'a date', command: { /* the command */ } }
+
 	    pm.setCommandToDispatched(cmd.commandId, cmd.sagaId, function (err) {});
 	  });
 	});
