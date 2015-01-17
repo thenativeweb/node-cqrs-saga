@@ -1,3 +1,6 @@
+## [v1.2.0](https://github.com/adrai/node-cqrs-saga/compare/v1.1.3...v1.2.0)
+- added getInfo function
+
 ## [v1.1.3](https://github.com/adrai/node-cqrs-saga/compare/v1.1.2...v1.1.3)
 - added commitstamp to getUndispatchedcommands
 - added possibility to addCommandToSend for timeoutedSagas

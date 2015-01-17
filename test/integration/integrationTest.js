@@ -21,7 +21,38 @@ describe('integration', function () {
       meta: 'meta'
     });
 
+    expect(function () {
+      pm.getInfo();
+    }).to.throwError('/init');
+
     pm.init(done);
+  });
+
+  describe('requesting information', function () {
+
+    it('it should return the expected information', function () {
+
+      var info = pm.getInfo();
+      expect(info.sagas.length).to.eql(4);
+      expect(info.sagas[0].name).to.eql('orderConfirmed');
+      expect(info.sagas[0].aggregate).to.eql('order');
+      expect(info.sagas[0].context).to.eql('sale');
+      expect(info.sagas[0].version).to.eql(0);
+      expect(info.sagas[1].name).to.eql('orderCreated');
+      expect(info.sagas[1].aggregate).to.eql('order');
+      expect(info.sagas[1].context).to.eql('sale');
+      expect(info.sagas[1].version).to.eql(0);
+      expect(info.sagas[2].name).to.eql('paymentAccepted');
+      expect(info.sagas[2].aggregate).to.eql('payment');
+      expect(info.sagas[2].context).to.eql('sale');
+      expect(info.sagas[2].version).to.eql(2);
+      expect(info.sagas[3].name).to.eql('seatsReserved');
+      expect(info.sagas[3].aggregate).to.eql('reservation');
+      expect(info.sagas[3].context).to.eql('sale');
+      expect(info.sagas[3].version).to.eql(0);
+
+    });
+
   });
 
   describe('handling an event that will not be handled', function () {
@@ -106,7 +137,7 @@ describe('integration', function () {
   });
 
   describe('handling an event that will start a new saga', function () {
-    
+
     var transactionId;
 
     it('it should publish a command and it should callback without an error and with commands', function (done) {
@@ -147,7 +178,7 @@ describe('integration', function () {
         expect(cmds[0].payload.transactionId).to.be.a('string');
 
         transactionId = cmds[0].payload.transactionId;
-        
+
         expect(cmds[0].meta).to.eql(evt.meta);
         expect(sagaModels).to.be.an('array');
         expect(sagaModels.length).to.eql(1);
@@ -370,7 +401,7 @@ describe('integration', function () {
               });
 
             });
-            
+
           });
 
         });

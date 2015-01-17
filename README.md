@@ -288,6 +288,44 @@ The values describes the path to that property in the command message.
 	});
 
 
+## Request saga information
+
+After the initialization you can request the saga information:
+
+	pm.init(function (err) {
+	  pm.getInfo();
+	  // ==>
+	  // {
+	  //   "sagas": "sagas": [
+	  //     {
+	  //       "name": "orderConfirmed",
+	  //       "aggregate": "order",
+	  //       "context": "sale",
+	  //       "version": 0
+	  //     },
+	  //     {
+	  //       "name": "orderCreated",
+	  //       "aggregate": "order",
+	  //       "context": "sale",
+	  //       "version": 0
+	  //     },
+	  //     {
+	  //       "name": "paymentAccepted",
+	  //       "aggregate": "payment",
+	  //       "context": "sale",
+	  //       "version": 2
+	  //     },
+	  //     {
+	  //       "name": "seatsReserved",
+	  //       "aggregate": "reservation",
+	  //       "context": "sale",
+	  //       "version": 0
+	  //     }
+	  //   ]
+	  // }
+	});
+
+
 # Components definition
 
 ## Saga
