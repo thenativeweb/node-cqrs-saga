@@ -296,7 +296,7 @@ After the initialization you can request the saga information:
 	  pm.getInfo();
 	  // ==>
 	  // {
-	  //   "sagas": "sagas": [
+	  //   "sagas": [
 	  //     {
 	  //       "name": "orderConfirmed",
 	  //       "aggregate": "order",
