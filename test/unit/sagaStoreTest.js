@@ -70,7 +70,7 @@ describe('sagaStore', function() {
 
       it('it should return with the an instance of that implementation', function() {
 
-        var store = sagastore.create(InMemory);
+        var store = sagastore.create({ type: InMemory });
         expect(store).to.be.a(InMemory);
 
       });
