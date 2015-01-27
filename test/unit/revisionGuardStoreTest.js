@@ -68,7 +68,7 @@ describe('revisionGuardStore', function() {
 
       it('it should return with the an instance of that implementation', function() {
 
-        var store = revisionGuardStore.create(InMemory);
+        var store = revisionGuardStore.create({ type: InMemory });
         expect(store).to.be.a(InMemory);
 
       });
@@ -233,7 +233,7 @@ describe('revisionGuardStore', function() {
 
                     store.set('23', 5, 4, function (err) {
                       expect(err).not.to.be.ok();
-                      
+
                       store.get('23', function (err, rev) {
                         expect(err).not.to.be.ok();
                         expect(rev).to.eql(5);
@@ -243,7 +243,7 @@ describe('revisionGuardStore', function() {
                     });
 
                   });
-                  
+
                   describe('with a current revision that is less than expected', function () {
 
                     it('it should callback with a ConcurrencyError', function(done) {
@@ -261,7 +261,7 @@ describe('revisionGuardStore', function() {
                       });
 
                     });
-                    
+
                   });
 
                   describe('with a current revision that is greater than expected', function () {
