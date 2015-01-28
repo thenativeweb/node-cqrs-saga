@@ -1,4 +1,4 @@
-## [v1.2.2](https://github.com/adrai/node-cqrs-saga/compare/v1.2.1...v1.2.2)
+## [v1.2.3](https://github.com/adrai/node-cqrs-saga/compare/v1.2.1...v1.2.3)
 - fix usage with own db implementation
 
 ## [v1.2.1](https://github.com/adrai/node-cqrs-saga/compare/v1.2.0...v1.2.1)
