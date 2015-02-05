@@ -1,3 +1,6 @@
+## [v1.2.4](https://github.com/adrai/node-cqrs-saga/compare/v1.2.3...v1.2.4)
+- added convenience information on sagaModel (actionOnCommit)
+
 ## [v1.2.3](https://github.com/adrai/node-cqrs-saga/compare/v1.2.1...v1.2.3)
 - fix usage with own db implementation
 
