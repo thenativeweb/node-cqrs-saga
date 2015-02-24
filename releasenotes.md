@@ -1,3 +1,6 @@
+## [v1.2.4](https://github.com/adrai/node-cqrs-saga/compare/v1.2.4...v1.2.5)
+- optimize structureParser
+
 ## [v1.2.4](https://github.com/adrai/node-cqrs-saga/compare/v1.2.3...v1.2.4)
 - added convenience information on sagaModel (actionOnCommit)
 
