@@ -170,7 +170,7 @@ describe('sagaStore', function() {
             describe('calling disconnect', function() {
 
               beforeEach(function(done) {
-                var store = sagastore.create({ type: type });
+                store = sagastore.create({ type: type });
                 store.connect(done);
               });
 
