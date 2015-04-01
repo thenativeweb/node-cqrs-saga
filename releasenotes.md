@@ -1,3 +1,6 @@
+## [v1.2.9](https://github.com/adrai/node-cqrs-saga/compare/v1.2.8...v1.2.9)
+- fixed mongodb indexes
+
 ## [v1.2.8](https://github.com/adrai/node-cqrs-saga/compare/v1.2.7...v1.2.8)
 - added mongodb driver 2.x support
 
