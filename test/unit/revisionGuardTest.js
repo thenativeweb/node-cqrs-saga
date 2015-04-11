@@ -180,6 +180,7 @@ describe('revisionGuard', function () {
       });
       
       beforeEach(function (done) {
+        guard.currentHandlingRevisions = {};
         store.clear(done);
       });
       
@@ -280,6 +281,10 @@ describe('revisionGuard', function () {
                 expect(guarded).to.eql(2);
                 check();
               });
+            });
+            guard.guard(evt3, function (err, finish) {
+              expect(err).to.be.ok();
+              expect(err.name).to.eql('AlreadyHandlingError');
             });
           }, 10);
 
