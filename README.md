@@ -360,7 +360,16 @@ After the initialization you can request the saga information:
 	  // optional, default Infinity, all sagas will be sorted by this value
 	  priority: 1
 	}, function (evt, saga, callback) {
-
+	  
+	  // if you have multiple concurrent events that targets the same saga, you can catch it like this: 
+	  if (saga.actionOnCommit === 'create') {
+	  	return this.retry(callback);
+	  	// or
+	  	//return this.retry(100, callback); // retries to handle again in 0-100ms
+	  	// or
+	  	//return this.retry({ from: 500, to: 8000 }, callback); // retries to handle again in 500-8000ms
+	  }
+	  
 	  saga.set('orderId', evt.aggregate.id);
 	  saga.set('totalCosts', evt.payload.totalCosts);
 	  // or

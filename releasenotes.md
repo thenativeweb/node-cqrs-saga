@@ -1,3 +1,6 @@
+## [v1.4.0](https://github.com/adrai/node-cqrs-saga/compare/v1.3.0...v1.4.0)
+- add retry mechanism for saga
+
 ## [v1.3.0](https://github.com/adrai/node-cqrs-saga/compare/v1.2.9...v1.3.0)
 - fix revisionGuard when handling duplicate events at the same time
 

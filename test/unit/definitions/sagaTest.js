@@ -211,13 +211,13 @@ describe('saga definition', function () {
     });
 
     describe('handling an event', function () {
-      
+
       var saga;
-      
+
       before(function (done) {
         sagaStore.connect(done);
       });
-      
+
       describe('in a saga', function () {
 
         describe('that defines containsProperties', function () {
@@ -225,7 +225,9 @@ describe('saga definition', function () {
           describe('not matching', function () {
 
             it('it should work as expected', function (done) {
-              var sagaFn = function () {};
+              var sagaFn = function () {
+                expect(this.retry).to.be.a('function');
+              };
               saga = api.defineSaga({
                 name: 'eventName',
                 version: 3,
@@ -247,10 +249,11 @@ describe('saga definition', function () {
           describe('matching', function () {
 
             it('it should work as expected', function (done) {
-              
+
               var fnCalled = false;
               var sagaId = null;
               var sagaFn = function (e, s, clb) {
+                expect(this.retry).to.be.a('function');
                 expect(e.aggId).to.eql('123');
                 expect(s.id).to.be.a('string');
                 sagaId = s.id;
@@ -278,13 +281,14 @@ describe('saga definition', function () {
         });
 
         describe('that does not define containProperties', function () {
-          
+
           describe('having defined an id', function () {
 
             it('it should it as saga id', function (done) {
 
               var fnCalled = false;
               var sagaFn = function (e, s, clb) {
+                expect(this.retry).to.be.a('function');
                 expect(e.aggId).to.eql('123');
                 expect(s.id).to.eql('123');
                 fnCalled = true;
@@ -305,11 +309,11 @@ describe('saga definition', function () {
                 done();
               });
             });
-            
+
           });
 
           describe('having an existing saga', function () {
-            
+
             before(function (done) {
               sagaStore.save({ id: '5647', _commitStamp: new Date(), my: 'data' }, [], done);
             });
@@ -318,6 +322,7 @@ describe('saga definition', function () {
 
               var fnCalled = false;
               var sagaFn = function (e, s, clb) {
+                expect(this.retry).to.be.a('function');
                 expect(e.aggId).to.eql('5647');
                 expect(s.id).to.eql('5647');
                 expect(s.get('my')).to.eql('data');
@@ -351,6 +356,7 @@ describe('saga definition', function () {
 
               var fnCalled = false;
               var sagaFn = function (e, s, clb) {
+                expect(this.retry).to.be.a('function');
                 expect(e.aggId).to.eql('5647');
                 expect(s.id).to.eql('5647');
                 s.addCommandToSend({ c: 'data1' });
@@ -398,6 +404,7 @@ describe('saga definition', function () {
 
                 var fnCalled = false;
                 var sagaFn = function (e, s, clb) {
+                  expect(this.retry).to.be.a('function');
                   expect(e.aggId).to.eql('5647');
                   expect(s.id).to.eql('5647');
                   s.defineTimeout(new Date(2034, 8, 25));
@@ -431,7 +438,7 @@ describe('saga definition', function () {
                   done();
                 });
               });
-              
+
             });
 
             describe('with one command', function () {
@@ -440,6 +447,7 @@ describe('saga definition', function () {
 
                 var fnCalled = false;
                 var sagaFn = function (e, s, clb) {
+                  expect(this.retry).to.be.a('function');
                   expect(e.aggId).to.eql('5647');
                   expect(s.id).to.eql('5647');
                   s.defineTimeout(new Date(2034, 8, 23), { c: 'data1' });
@@ -484,6 +492,7 @@ describe('saga definition', function () {
 
                 var fnCalled = false;
                 var sagaFn = function (e, s, clb) {
+                  expect(this.retry).to.be.a('function');
                   expect(e.aggId).to.eql('5647');
                   expect(s.id).to.eql('5647');
                   s.defineTimeout(new Date(2034, 8, 27), [{ c: 'data1' }, { c: 'data2', meta: 'm' }]);
@@ -538,6 +547,7 @@ describe('saga definition', function () {
 
                 var fnCalled = false;
                 var sagaFn = function (e, s, clb) {
+                  expect(this.retry).to.be.a('function');
                   expect(e.aggId).to.eql('9361');
                   expect(s.id).to.eql('9361');
                   s.destroy();
@@ -565,7 +575,7 @@ describe('saga definition', function () {
                   });
                 });
               });
-              
+
             });
 
             describe('with some commands and data and timeout stuff', function () {
@@ -575,6 +585,7 @@ describe('saga definition', function () {
                 var sagaId;
                 var fnCalled = false;
                 var sagaFn = function (e, s, clb) {
+                  expect(this.retry).to.be.a('function');
                   expect(e.aggId).to.eql('5647');
                   expect(s.id).to.be.a('string');
                   sagaId = s.id;
@@ -617,9 +628,9 @@ describe('saga definition', function () {
                   expect(cmds[0].meta).to.eql('evtMeta');
                   expect(cmds[1].cS).to.eql('data2S');
                   expect(cmds[1].meta).to.eql('mS');
-                  
+
                   expect(fnCalled).to.eql(true);
-                  
+
                   sagaStore.get(sagaId, function (err, saga) {
                     expect(err).not.to.be.ok();
                     expect(saga).to.be.an('object');
@@ -648,6 +659,7 @@ describe('saga definition', function () {
 
               var fnCalled = false;
               var sagaFn = function (e, s, clb) {
+                expect(this.retry).to.be.a('function');
                 expect(e).to.eql('abc');
                 expect(s.id).to.be.a('string');
                 fnCalled = true;
@@ -670,7 +682,7 @@ describe('saga definition', function () {
             });
 
           });
-          
+
           describe('defining existing true', function () {
 
             describe('not having an existing', function () {
@@ -679,6 +691,7 @@ describe('saga definition', function () {
 
                 var fnCalled = false;
                 var sagaFn = function (e, s, clb) {
+                  expect(this.retry).to.be.a('function');
                   expect(e).to.eql('abc');
                   expect(s.id).to.be.a('string');
                   fnCalled = true;
@@ -705,7 +718,7 @@ describe('saga definition', function () {
             });
 
             describe('having an existing', function () {
-              
+
               before(function (done) {
                 sagaStore.save({ id: '182734', _commitStamp: new Date() }, [], done);
               });
@@ -714,6 +727,7 @@ describe('saga definition', function () {
 
                 var fnCalled = false;
                 var sagaFn = function (e, s, clb) {
+                  expect(this.retry).to.be.a('function');
                   expect(e).to.eql('abc');
                   expect(s.id).to.be.a('string');
                   fnCalled = true;
@@ -738,7 +752,45 @@ describe('saga definition', function () {
               });
 
             });
-            
+
+          });
+
+          describe('calling retry during the handling', function () {
+
+            it('it should work as expected', function (done) {
+
+              var runs = 0;
+              var fnCalled = false;
+              var sagaFn = function (e, s, clb) {
+                runs++;
+                expect(this.retry).to.be.a('function');
+                if (runs <= 3) {
+                  return this.retry(1);
+                }
+
+                expect(e).to.eql('abc');
+                expect(s.id).to.be.a('string');
+                fnCalled = true;
+                clb(null);
+              };
+              saga = api.defineSaga({
+                name: 'eventName',
+                version: 3,
+                payload: 'path'
+              }, sagaFn);
+
+              saga.useSagaStore(sagaStore);
+
+              saga.handle({ aggId: '213', meta: 'evtMeta', path: 'abc' }, function (err, sagaModel) {
+                expect(err).not.to.be.ok();
+                expect(sagaModel.id).to.be.a('string');
+                expect(fnCalled).to.eql(true);
+
+                expect(runs).to.eql(4);
+                done();
+              });
+            });
+
           });
 
         });
