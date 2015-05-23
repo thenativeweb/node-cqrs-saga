@@ -397,7 +397,11 @@ describe('integration', function () {
 
                 expect(publishedCommands.length).to.eql(0);
 
-                done();
+                pm.getLastEvent(function (err, evt) {
+                  expect(err).not.be.ok();
+                  expect(evt.aggregate.revision).to.eql(2);
+                  done();
+                });
               });
 
             });

@@ -1,3 +1,7 @@
+## [v1.5.0](https://github.com/adrai/node-cqrs-saga/compare/v1.4.0...v1.5.0)
+- when using revisionGuard, always save the last event
+- when using revisionGuard, added possibility to fetch the last handled event
+
 ## [v1.4.0](https://github.com/adrai/node-cqrs-saga/compare/v1.3.0...v1.4.0)
 - add retry mechanism for saga
 

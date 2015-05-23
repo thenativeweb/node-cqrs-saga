@@ -47,6 +47,7 @@ describe('power management', function () {
         expect(pm.onEventMissing).to.be.a('function');
         expect(pm.init).to.be.a('function');
         expect(pm.handle).to.be.a('function');
+        expect(pm.getLastEvent).to.be.a('function');
 
         expect(pm.getTimeoutedSagas).to.be.a('function');
         expect(pm.getOlderSagas).to.be.a('function');

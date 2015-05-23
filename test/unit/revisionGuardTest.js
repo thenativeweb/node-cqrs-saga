@@ -298,7 +298,12 @@ describe('revisionGuard', function () {
                 expect(err).to.be.ok();
                 expect(err.name).to.eql('AlreadyHandledError');
                 expect(guarded).to.eql(3);
-                done();
+
+                store.getLastEvent(function (err, evt) {
+                  expect(err).not.to.be.ok();
+                  expect(evt.id).to.eql(evt3.id);
+                  done();
+                });
               });
             });
           }, 300);

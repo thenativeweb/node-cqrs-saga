@@ -176,7 +176,6 @@ The values describes the path to that property in the command message.
 
 
 ## Wire up event missing [optional]
-### you can define a synchronous function
 
 	pm.onEventMissing(function (info, evt) {
 
@@ -190,6 +189,16 @@ The values describes the path to that property in the command message.
 		pm.handle(missingEvent, function (err) {
 			if (err) { console.log(err); }
 		});
+
+	});
+
+you can get the last guarded event:
+
+	pm.getLastEvent(function (err, evt) {
+		
+	  if (event.occurredAt < Date.now()) {
+	  	// ...
+	  }
 
 	});
 

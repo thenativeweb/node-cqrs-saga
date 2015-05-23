@@ -101,6 +101,8 @@ describe('revisionGuardStore', function() {
               expect(store.getNewId).to.be.a('function');
               expect(store.get).to.be.a('function');
               expect(store.set).to.be.a('function');
+              expect(store.saveLastEvent).to.be.a('function');
+              expect(store.getLastEvent).to.be.a('function');
 
             });
 
@@ -335,6 +337,40 @@ describe('revisionGuardStore', function() {
                           expect(rev).to.eql(6);
 
                           done();
+                        });
+                      });
+
+                    });
+
+                  });
+
+                });
+
+                describe('saving the last event', function() {
+
+                  it('it should work as expected', function (done) {
+
+                    store.getLastEvent(function (err, evt) {
+                      expect(err).not.to.be.ok();
+                      expect(evt).not.to.be.ok();
+
+                      store.saveLastEvent({ my: 'evt' }, function (err) {
+                        expect(err).not.to.be.ok();
+
+                        store.getLastEvent(function (err, evt) {
+                          expect(err).not.to.be.ok();
+                          expect(evt.my).to.eql('evt');
+
+                          store.clear(function (err) {
+                            expect(err).not.to.be.ok();
+
+                            store.getLastEvent(function (err, evt) {
+                              expect(err).not.to.be.ok();
+                              expect(evt).not.to.be.ok();
+
+                              done();
+                            });
+                          });
                         });
                       });
 
