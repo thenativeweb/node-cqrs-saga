@@ -447,6 +447,15 @@ After the initialization you can request the saga information:
 	//.useAsId(function (evt, callback) {
 	//  callback(null, 'newId');
 	//});
+	// 
+	// optional define a function that checks if an event should be handled
+	//.defineShouldHandle(function (evt, saga) {
+	//  return true;
+	//});
+	// or
+	//.defineShouldHandle(function (evt, saga, callback) {
+	//  callback(null, true');
+	//});
 
 
 # Persistence functions
