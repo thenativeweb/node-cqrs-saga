@@ -1,3 +1,6 @@
+## [v1.6.1](https://github.com/adrai/node-cqrs-saga/compare/v1.6.0...v1.6.1)
+- redis: replace .keys() calls with .scan() calls => scales better
+
 ## [v1.6.0](https://github.com/adrai/node-cqrs-saga/compare/v1.5.0...v1.6.0)
 - introduce possibility to define a shouldHandle function
 
