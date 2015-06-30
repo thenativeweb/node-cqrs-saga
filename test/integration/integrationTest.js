@@ -25,7 +25,10 @@ describe('integration', function () {
       pm.getInfo();
     }).to.throwError('/init');
 
-    pm.init(done);
+    pm.init(function (err, warns) {
+      expect(warns).not.to.be.ok();
+      done(err);
+    });
   });
 
   describe('requesting information', function () {

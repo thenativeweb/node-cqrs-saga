@@ -205,8 +205,9 @@ you can get the last guarded event:
 
 ## Initialization
 
-	pm.init(function (err) {
+	pm.init(function (err, warnings) {
 	  // this callback is called when all is ready...
+	  // warnings: if no warnings warnings is null, else it's an array containing errors during require of files
 	});
 
 	// or

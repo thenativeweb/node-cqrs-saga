@@ -1,3 +1,6 @@
+## [v1.6.4](https://github.com/adrai/node-cqrs-saga/compare/v1.6.3...v1.6.4)
+- expose warnings during initialization
+
 ## [v1.6.3](https://github.com/adrai/node-cqrs-saga/compare/v1.6.2...v1.6.3)
 - better catch for userland errors
 
