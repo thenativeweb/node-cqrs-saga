@@ -33,13 +33,6 @@ globals:
   angular: false
   jQuery: false
 
-settings:
-  jsx: true
-
-plugins: [react]
-ecmaFeatures:
-  jsx: true
-
 rules:
   # ERRORS
   no-unused-vars: [2, {vars: all, args: none}]
