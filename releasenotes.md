@@ -1,3 +1,6 @@
+## [v1.6.5](https://github.com/adrai/node-cqrs-saga/compare/v1.6.4...v1.6.5)
+- catch throwing errors when calling callback
+
 ## [v1.6.4](https://github.com/adrai/node-cqrs-saga/compare/v1.6.3...v1.6.4)
 - expose warnings during initialization
 
