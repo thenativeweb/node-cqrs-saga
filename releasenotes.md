@@ -1,3 +1,6 @@
+## [v1.6.7](https://github.com/adrai/node-cqrs-saga/compare/v1.6.6...v1.6.7)
+- optimization for `npm link`'ed development
+
 ## [v1.6.6](https://github.com/adrai/node-cqrs-saga/compare/v1.6.4...v1.6.6)
 - catch throwing errors when calling callback
 

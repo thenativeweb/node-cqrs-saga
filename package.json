@@ -17,12 +17,14 @@
     "jsondate": "0.0.1",
     "lodash": "3.10.0",
     "node-uuid": "1.4.3",
+    "parent-require": "1.0.0",
     "tolerance": "1.0.0",
     "trycatch": "1.5.11"
   },
   "devDependencies": {
     "azure-storage": ">=0.3.0",
     "cradle": ">=0.6.7",
+    "eslint": "^0.24.1",
     "expect.js": ">= 0.1.2",
     "mocha": ">= 1.0.1",
     "mongodb": ">= 0.0.1",
