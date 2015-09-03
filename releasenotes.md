@@ -1,3 +1,6 @@
+## [v1.6.8](https://github.com/adrai/node-cqrs-saga/compare/v1.6.7...v1.6.8)
+- updated dep
+
 ## [v1.6.7](https://github.com/adrai/node-cqrs-saga/compare/v1.6.6...v1.6.7)
 - optimization for `npm link`'ed development
 
