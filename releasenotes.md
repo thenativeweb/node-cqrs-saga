@@ -1,3 +1,6 @@
+## [v1.6.9](https://github.com/adrai/node-cqrs-saga/compare/v1.6.8...v1.6.9)
+- give possibility to use mongodb with authSource
+
 ## [v1.6.8](https://github.com/adrai/node-cqrs-saga/compare/v1.6.7...v1.6.8)
 - updated dep
 

@@ -35,6 +35,7 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	    dbName: 'domain',                           // optional
 	    collectionName: 'sagas',                    // optional
 	    timeout: 10000                              // optional
+      // authSource: 'authedicationDatabase',        // optional
 	    // username: 'technicalDbUser',                // optional
 	    // password: 'secret'                          // optional
 	  },
@@ -195,7 +196,7 @@ The values describes the path to that property in the command message.
 you can get the last guarded event:
 
 	pm.getLastEvent(function (err, evt) {
-		
+
 	  if (event.occurredAt < Date.now()) {
 	  	// ...
 	  }
@@ -370,8 +371,8 @@ After the initialization you can request the saga information:
 	  // optional, default Infinity, all sagas will be sorted by this value
 	  priority: 1
 	}, function (evt, saga, callback) {
-	  
-	  // if you have multiple concurrent events that targets the same saga, you can catch it like this: 
+
+	  // if you have multiple concurrent events that targets the same saga, you can catch it like this:
 	  if (saga.actionOnCommit === 'create') {
 	  	return this.retry(callback);
 	  	// or
@@ -379,7 +380,7 @@ After the initialization you can request the saga information:
 	  	// or
 	  	//return this.retry({ from: 500, to: 8000 }, callback); // retries to handle again in 500-8000ms
 	  }
-	  
+
 	  saga.set('orderId', evt.aggregate.id);
 	  saga.set('totalCosts', evt.payload.totalCosts);
 	  // or
@@ -448,7 +449,7 @@ After the initialization you can request the saga information:
 	//.useAsId(function (evt, callback) {
 	//  callback(null, 'newId');
 	//});
-	// 
+	//
 	// optional define a function that checks if an event should be handled
 	//.defineShouldHandle(function (evt, saga) {
 	//  return true;
