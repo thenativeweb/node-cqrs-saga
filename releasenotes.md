@@ -1,3 +1,6 @@
+## [v1.6.10](https://github.com/adrai/node-cqrs-saga/compare/v1.6.9...v1.6.10)
+- remove trycatch dependency due to memory leaks
+
 ## [v1.6.9](https://github.com/adrai/node-cqrs-saga/compare/v1.6.8...v1.6.9)
 - give possibility to use mongodb with authSource
 

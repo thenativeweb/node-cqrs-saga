@@ -61,7 +61,7 @@ describe('saga definition', function () {
         var saga = api.defineSaga(null, sagaFn);
         expect(saga).to.be.a(DefinitionBase);
         expect(saga).to.be.a(Saga);
-        expect(saga.sagaFn).to.eql(sagaFn);
+        expect(saga.sagaFn).to.be.a('function');
         expect(saga.definitions).to.be.an('object');
         expect(saga.definitions.command).to.be.an('object');
         expect(saga.definitions.event).to.be.an('object');
@@ -92,7 +92,7 @@ describe('saga definition', function () {
         var saga = api.defineSaga({ name: 'commandName', version: 3 }, sagaFn);
         expect(saga).to.be.a(DefinitionBase);
         expect(saga).to.be.a(Saga);
-        expect(saga.sagaFn).to.eql(sagaFn);
+        expect(saga.sagaFn).to.be.a('function');
         expect(saga.definitions).to.be.an('object');
         expect(saga.definitions.command).to.be.an('object');
         expect(saga.definitions.event).to.be.an('object');
