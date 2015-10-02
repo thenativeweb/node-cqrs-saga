@@ -4,14 +4,14 @@ var expect = require('expect.js'),
   revGuardStore = require('../../lib/revisionGuardStore');
 
 describe('revisionGuard', function () {
-  
+
   var store;
-  
+
   before(function (done) {
     revGuardStore.create(function (err, s) {
       store = s;
       done();
-    })
+    });
   });
 
   describe('creating a new guard', function () {
@@ -122,9 +122,9 @@ describe('revisionGuard', function () {
       });
 
     });
-    
+
     describe('guarding an event', function () {
-      
+
       var guard;
 
       var evt1 = {
@@ -162,7 +162,7 @@ describe('revisionGuard', function () {
         },
         revision: 3
       };
-      
+
       before(function () {
         guard = new RevisionGuard(store, { queueTimeout: 200 });
         guard.defineEvent({
@@ -178,36 +178,36 @@ describe('revisionGuard', function () {
           meta: 'meta'
         });
       });
-      
+
       beforeEach(function (done) {
         guard.currentHandlingRevisions = {};
         store.clear(done);
       });
-      
+
       describe('in correct order', function () {
-        
+
         it('it should work as expected', function (done) {
-          
+
           var guarded = 0;
-          
+
           function check () {
             guarded++;
-            
+
             if (guarded === 3) {
               done();
             }
           }
-          
+
           guard.guard(evt1, function (err, finish) {
             expect(err).not.to.be.ok();
-            
+
             finish(function (err) {
               expect(err).not.to.be.ok();
               expect(guarded).to.eql(0);
               check();
             });
           });
-          
+
           setTimeout(function () {
             guard.guard(evt2, function (err, finish) {
               expect(err).not.to.be.ok();
@@ -231,9 +231,100 @@ describe('revisionGuard', function () {
               });
             });
           }, 20);
-          
+
         });
-        
+
+        describe('but with slow beginning events', function () {
+
+          var specialGuard;
+
+          before(function () {
+            specialGuard = new RevisionGuard(store, { queueTimeout: 2000, queueTimeoutMaxLoops: 15 });
+            specialGuard.defineEvent({
+              correlationId: 'correlationId',
+              id: 'id',
+              payload: 'payload',
+              name: 'name',
+              aggregateId: 'aggregate.id',
+              aggregate: 'aggregate.name',
+              context: 'context.name',
+              revision: 'revision',
+              version: 'version',
+              meta: 'meta'
+            });
+          });
+
+          beforeEach(function (done) {
+            specialGuard.currentHandlingRevisions = {};
+            store.clear(done);
+          });
+
+          it('it should work as expected', function (done) {
+
+            var guarded = 0;
+
+            function check () {
+              guarded++;
+
+              if (guarded === 3) {
+                done();
+              }
+            }
+
+            var start1 = Date.now();
+            specialGuard.guard(evt1, function (err, finish1) {
+              var diff1 = Date.now() - start1;
+              console.log('guarded 1: ' + diff1);
+              expect(err).not.to.be.ok();
+
+              setTimeout(function () {
+                start1 = Date.now();
+                finish1(function (err) {
+                  diff1 = Date.now() - start1;
+                  console.log('finished 1: ' + diff1);
+                  expect(err).not.to.be.ok();
+                  expect(guarded).to.eql(0);
+                  check();
+                });
+              }, 250);
+            });
+
+            var start2 = Date.now();
+            specialGuard.guard(evt2, function (err, finish2) {
+              var diff2 = Date.now() - start2;
+              console.log('guarded 2: ' + diff2);
+              expect(err).not.to.be.ok();
+
+              start2 = Date.now();
+              finish2(function (err) {
+                diff2 = Date.now() - start2;
+                console.log('finished 2: ' + diff2);
+                expect(err).not.to.be.ok();
+                expect(guarded).to.eql(1);
+                check();
+              });
+            });
+
+            var start3 = Date.now();
+            specialGuard.guard(evt3, function (err, finish3) {
+              var diff3 = Date.now() - start3;
+              console.log('guarded 3: ' + diff3);
+              expect(err).not.to.be.ok();
+
+              start3 = Date.now();
+              finish3(function (err) {
+                diff3 = Date.now() - start3;
+                console.log('finished 3: ' + diff3);
+                expect(err).not.to.be.ok();
+                expect(guarded).to.eql(2);
+                check();
+              });
+            });
+
+          });
+
+        });
+
       });
 
       describe('in wrong order', function () {
@@ -293,7 +384,7 @@ describe('revisionGuard', function () {
               expect(err).to.be.ok();
               expect(err.name).to.eql('AlreadyHandledError');
               expect(guarded).to.eql(3);
-              
+
               guard.guard(evt3, function (err) {
                 expect(err).to.be.ok();
                 expect(err.name).to.eql('AlreadyHandledError');
@@ -362,7 +453,7 @@ describe('revisionGuard', function () {
         });
 
       });
-      
+
     });
 
   });

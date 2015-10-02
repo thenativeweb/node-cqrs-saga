@@ -1,3 +1,6 @@
+## [v1.6.11](https://github.com/adrai/node-cqrs-saga/compare/v1.6.10...v1.6.11)
+- optimize handling of guarding the first events
+
 ## [v1.6.10](https://github.com/adrai/node-cqrs-saga/compare/v1.6.9...v1.6.10)
 - remove trycatch dependency due to memory leaks
 
