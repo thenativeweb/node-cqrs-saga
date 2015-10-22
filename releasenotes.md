@@ -1,3 +1,6 @@
+## [v1.6.12](https://github.com/adrai/node-cqrs-saga/compare/v1.6.11...v1.6.12)
+- redis: fix wrong multi response handling
+
 ## [v1.6.11](https://github.com/adrai/node-cqrs-saga/compare/v1.6.10...v1.6.11)
 - optimize handling of guarding the first events
 
