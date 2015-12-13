@@ -1,3 +1,6 @@
+## [v1.6.13](https://github.com/adrai/node-cqrs-saga/compare/v1.6.12...v1.6.13)
+- mongodb: added optional heartbeat
+
 ## [v1.6.12](https://github.com/adrai/node-cqrs-saga/compare/v1.6.11...v1.6.12)
 - redis: fix wrong multi response handling
 
