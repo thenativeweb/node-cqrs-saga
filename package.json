@@ -1,7 +1,7 @@
 {
   "author": "adrai",
   "name": "cqrs-saga",
-  "version": "1.6.14",
+  "version": "1.6.15",
   "private": false,
   "main": "index.js",
   "engines": {
