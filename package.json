@@ -11,7 +11,7 @@
     "lib": "./lib"
   },
   "dependencies": {
-    "async": "1.4.2",
+    "async": "^1.5.0",
     "debug": "2.2.0",
     "dotty": "0.0.2",
     "jsondate": "0.0.1",
@@ -27,7 +27,7 @@
     "expect.js": ">= 0.1.2",
     "mocha": ">= 1.0.1",
     "mongodb": ">= 0.0.1",
-    "redis": "2.3.x >= 0.10.1",
+    "redis": "^2.4.2",
     "tingodb": ">= 0.0.1"
   },
   "description": "Node-cqrs-saga is a node.js module that helps to implement the sagas in cqrs. It can be very useful as domain component if you work with (d)ddd, cqrs, eventdenormalizer, host, etc.",
