@@ -813,10 +813,12 @@ describe('power management', function () {
                   expect(onCommandCalled[1].i).to.eql('2');
                   expect(onCommandCalled[2].i).to.eql('3');
 
-                  expect(guardCalled).to.eql(true);
-                  expect(guardDoneCalled).to.eql(true);
+                  setTimeout(function () {
+                    expect(guardDoneCalled).to.eql(true);
+                    expect(guardCalled).to.eql(true);
 
-                  done();
+                    done();
+                  }, 500);
                 }
               };
 
