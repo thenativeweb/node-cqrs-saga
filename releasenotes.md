@@ -1,3 +1,6 @@
+## [v1.6.16](https://github.com/adrai/node-cqrs-saga/compare/v1.6.15...v1.6.16)
+- fix defineShouldHandle
+
 ## [v1.6.15](https://github.com/adrai/node-cqrs-saga/compare/v1.6.14...v1.6.15)
 - revisionGuard fix
 
