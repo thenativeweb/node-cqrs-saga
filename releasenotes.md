@@ -1,3 +1,6 @@
+## [v1.6.17](https://github.com/adrai/node-cqrs-saga/compare/v1.6.16...v1.6.17)
+- redis: added optional heartbeat
+
 ## [v1.6.16](https://github.com/adrai/node-cqrs-saga/compare/v1.6.15...v1.6.16)
 - fix defineShouldHandle
 
