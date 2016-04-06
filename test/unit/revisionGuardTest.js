@@ -325,6 +325,71 @@ describe('revisionGuard', function () {
 
         });
 
+        describe('but having a startRevisionNumber', function () {
+
+          var specialGuard;
+
+          beforeEach(function (done) {
+            specialGuard = new RevisionGuard(store, { queueTimeout: 200, queueTimeoutMaxLoops: 3, startRevisionNumber: 1 });
+            specialGuard.defineEvent({
+              correlationId: 'correlationId',
+              id: 'id',
+              payload: 'payload',
+              name: 'name',
+              aggregateId: 'aggregate.id',
+              aggregate: 'aggregate.name',
+              context: 'context.name',
+              revision: 'revision',
+              version: 'version',
+              meta: 'meta'
+            });
+            specialGuard.currentHandlingRevisions = {};
+            store.clear(done);
+          });
+
+          it('and guarding an event with revision greater than expected, it should emit an eventMissing event', function (done) {
+
+            specialGuard.onEventMissing(function (info, e) {
+              expect(info.aggregateId).to.equal(evt2.aggregate.id);
+              expect(info.aggregateRevision).to.equal(evt2.revision);
+              expect(info.guardRevision).to.equal(1);
+              expect(e).to.equal(evt2);
+              done();
+            });
+
+            specialGuard.guard(evt2, function (err, finish) {});
+
+          });
+
+          it('and guarding an event with revision like expected, it should work normally', function (done) {
+
+            specialGuard.guard(evt1, function (err, finish) {
+              expect(err).not.to.be.ok();
+              finish(function (err) {
+                expect(err).not.to.be.ok();
+                done();
+              });
+            });
+
+          });
+
+          it('and guarding an event with revision smaller than expected, it work normally', function (done) {
+
+            var evt0 = _.cloneDeep(evt1);
+            evt0.revision = 0;
+
+            specialGuard.guard(evt0, function (err, finish) {
+              expect(err).not.to.be.ok();
+              finish(function (err) {
+                expect(err).not.to.be.ok();
+                done();
+              });
+            });
+
+          });
+
+        });
+
       });
 
       describe('in wrong order', function () {
