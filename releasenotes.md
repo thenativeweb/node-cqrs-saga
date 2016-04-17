@@ -1,4 +1,4 @@
-## [v1.6.18](https://github.com/adrai/node-cqrs-saga/compare/v1.6.17...v1.6.18)
+## [v1.6.18](https://github.com/adrai/node-cqrs-saga/compare/v1.6.17...v1.6.19)
 - revisionGuard: optional startRevisionNumber
 
 ## [v1.6.17](https://github.com/adrai/node-cqrs-saga/compare/v1.6.16...v1.6.17)
