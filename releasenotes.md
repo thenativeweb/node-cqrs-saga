@@ -1,3 +1,6 @@
+## [v1.6.21](https://github.com/adrai/node-cqrs-saga/compare/v1.6.20...v1.6.21)
+- Support mongo connection string
+
 ## [v1.6.20](https://github.com/adrai/node-cqrs-saga/compare/v1.6.19...v1.6.20)
 - redis, mongodb: call disconnect on ping error
 
