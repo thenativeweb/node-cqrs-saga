@@ -1,3 +1,6 @@
+## [v1.6.22](https://github.com/adrai/node-cqrs-saga/compare/v1.6.21...v1.6.22)
+- Fix events getting lost at high concurrency [#33](https://github.com/adrai/node-cqrs-saga/pull/#33) thanks to [hilkeheremans](https://github.com/hilkeheremans)
+
 ## [v1.6.21](https://github.com/adrai/node-cqrs-saga/compare/v1.6.20...v1.6.21)
 - Support mongo connection string
 
