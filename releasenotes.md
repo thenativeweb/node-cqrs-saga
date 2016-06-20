@@ -1,3 +1,6 @@
+## [v1.6.23](https://github.com/adrai/node-cqrs-saga/compare/v1.6.22...v1.6.23)
+- redis, mongodb: call disconnect on ping error
+
 ## [v1.6.22](https://github.com/adrai/node-cqrs-saga/compare/v1.6.21...v1.6.22)
 - Fix events getting lost at high concurrency [#33](https://github.com/adrai/node-cqrs-saga/pull/#33) thanks to [hilkeheremans](https://github.com/hilkeheremans)
 
