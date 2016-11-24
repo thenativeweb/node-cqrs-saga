@@ -1,3 +1,6 @@
+## [v1.6.25](https://github.com/adrai/node-cqrs-saga/compare/v1.6.24...v1.6.25)
+- update deps
+
 ## [v1.6.24](https://github.com/adrai/node-cqrs-saga/compare/v1.6.23...v1.6.24)
 - edgecase in revisionGuard
 
