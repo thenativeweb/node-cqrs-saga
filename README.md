@@ -145,7 +145,7 @@ The values describes the path to that property in the command message.
 ### you can define a synchronous function
 
 	pm.idGenerator(function () {
-	  var id = require('node-uuid').v4().toString();
+	  var id = require('uuid').v4().toString();
 	  return id;
 	});
 
@@ -153,7 +153,7 @@ The values describes the path to that property in the command message.
 
 	pm.idGenerator(function (callback) {
 	  setTimeout(function () {
-	    var id = require('node-uuid').v4().toString();
+	    var id = require('uuid').v4().toString();
 	    callback(null, id);
 	  }, 50);
 	});
