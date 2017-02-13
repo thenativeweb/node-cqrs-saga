@@ -1,4 +1,4 @@
-## [v1.6.26](https://github.com/adrai/node-cqrs-saga/compare/v1.6.25...v1.6.26)
+## [v1.6.27](https://github.com/adrai/node-cqrs-saga/compare/v1.6.25...v1.6.27)
 - fix for new mongodb driver
 
 ## [v1.6.25](https://github.com/adrai/node-cqrs-saga/compare/v1.6.24...v1.6.25)
