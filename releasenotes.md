@@ -1,3 +1,6 @@
+## [v1.7.0](https://github.com/adrai/node-cqrs-saga/compare/v1.6.27...v1.7.0)
+- for getTimeoutedSagas handling: if the pm.onCommand handler is registered it will be automatically executed
+
 ## [v1.6.27](https://github.com/adrai/node-cqrs-saga/compare/v1.6.25...v1.6.27)
 - fix for new mongodb driver
 

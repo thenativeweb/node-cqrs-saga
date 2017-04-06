@@ -5,10 +5,10 @@ module.exports = require('../../../../').defineSaga({// event to match...
   aggregate: 'order',
   context: 'sale',
   existing: false, // if true it will check if there is already a saga in the db and only if there is something it will continue...
-  containingProperties: ['aggregate.id', 'payload.totalCosts', 'payload.seats']
+  containingProperties: ['aggregate.id', 'payload.totalCosts', 'payload.seats'],
   // payload: 'payload' // if not defined it will pass the whole event...
   // id: 'aggregate.id' // if not defined it will generate an id
-  // priority: 1 // optional, default Infinity, all sagas will be sorted by this value
+  priority: 2 // optional, default Infinity, all sagas will be sorted by this value
 }, function (evt, saga, callback) {
 
   // saga.id or saga.get('id') is a generated id...
@@ -36,7 +36,7 @@ module.exports = require('../../../../').defineSaga({// event to match...
 
   // timeout stuff  (optional)
   var tomorrow = new Date();
-  tomorrow.setDate((new Date()).getDate() + 1); 
+  tomorrow.setDate((new Date()).getDate() + 1);
   var timeoutCmd = {
     // id: 'my own command id', // if you don't pass an id it will generate one, when emitting the command...
     name: 'cancelOrder',

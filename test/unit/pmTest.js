@@ -1109,29 +1109,78 @@ describe('power management', function () {
 
             it('it should work as expected', function (done) {
 
-              pm.getTimeoutedSagas(function (err, sagas) {
-                expect(err).not.to.be.ok();
-                expect(sagas).to.be.an('array');
-                expect(sagas.length).to.eql(1);
-                sagas[0].addCommandToSend({ id: 'newId', name: 'newCommand' });
-                sagas[0].commit(function (err) {
+              pm.getUndispatchedCommands(function (err, cmds) {
+                expect(cmds.length).to.eql(4);
+
+                pm.getTimeoutedSagas(function (err, sagas) {
                   expect(err).not.to.be.ok();
+                  expect(sagas).to.be.an('array');
+                  expect(sagas.length).to.eql(1);
+                  sagas[0].addCommandToSend({ id: 'newId', name: 'newCommand' });
+                  sagas[0].commit(function (err) {
+                    expect(err).not.to.be.ok();
+
+                    pm.getTimeoutedSagas(function (err, sagas) {
+                      expect(err).not.to.be.ok();
+                      expect(sagas).to.be.an('array');
+                      expect(sagas.length).to.eql(1);
+                      pm.getUndispatchedCommands(function (err, cmds) {
+                        expect(cmds.length).to.eql(5);
+                        var cmd = cmds[3];
+                        expect(cmd.sagaId).to.eql('sagaId2');
+                        expect(cmd.commandId).to.eql('newId');
+                        expect(cmd.commitStamp).to.be.ok();
+                        expect(cmd.command.id).to.eql('newId');
+                        expect(cmd.command.name).to.eql('newCommand');
+                        done();
+                      });
+                    });
+                  });
+                });
+              });
+
+            });
+
+            describe('having added commands to send and having registered an onCommand handle', function () {
+
+              it('it should work as expected', function (done) {
+
+                pm.onCommand(function (cmd) {
+                  expect(cmd.id).to.eql('newId');
+                  expect(cmd.payload.id).to.eql('newId');
+                  expect(cmd.payload.name).to.eql('newCommand');
+                });
+
+                pm.getUndispatchedCommands(function (err, cmds) {
+                  expect(cmds.length).to.eql(4);
 
                   pm.getTimeoutedSagas(function (err, sagas) {
                     expect(err).not.to.be.ok();
                     expect(sagas).to.be.an('array');
                     expect(sagas.length).to.eql(1);
-                    pm.getUndispatchedCommands(function (err, cmds) {
-                      var cmd = cmds[3];
-                      expect(cmd.sagaId).to.eql('sagaId2');
-                      expect(cmd.commandId).to.eql('newId');
-                      expect(cmd.commitStamp).to.be.ok();
-                      expect(cmd.command.id).to.eql('newId');
-                      expect(cmd.command.name).to.eql('newCommand');
-                      done();
+                    sagas[0].addCommandToSend({ id: 'newId', name: 'newCommand' });
+                    sagas[0].commit(function (err) {
+                      expect(err).not.to.be.ok();
+
+                      pm.getTimeoutedSagas(function (err, sagas) {
+                        expect(err).not.to.be.ok();
+                        expect(sagas).to.be.an('array');
+                        expect(sagas.length).to.eql(1);
+                        pm.getUndispatchedCommands(function (err, cmds) {
+                          expect(cmds.length).to.eql(4);
+                          var cmd = cmds[3];
+                          expect(cmd.sagaId).to.eql('sagaId3');
+                          expect(cmd.commandId).to.eql('cmdId3');
+                          expect(cmd.commitStamp).to.be.ok();
+                          expect(cmd.command.id).to.eql('cmdId3');
+                          expect(cmd.command.data).to.eql('cmdData3');
+                          done();
+                        });
+                      });
                     });
                   });
                 });
+
               });
 
             });

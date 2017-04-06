@@ -7,9 +7,9 @@ module.exports = require('../../../../').defineSaga({// event to match...
   version: 2, // default is 0
   containingProperties: ['payload.transactionId'],
   id: 'payload.transactionId',
-  existing: true // if true it will check if there is already a saga in the db and only if there is something it will continue...
+  existing: true, // if true it will check if there is already a saga in the db and only if there is something it will continue...
   // payload: 'payload' // if not defined it will pass the whole event...
-  // priority: 1 // optional, default Infinity, all sagas will be sorted by this value
+  priority: 3 // optional, default Infinity, all sagas will be sorted by this value
 }, function (evt, saga, callback) {
 
   var cmd = {
@@ -27,7 +27,7 @@ module.exports = require('../../../../').defineSaga({// event to match...
     },
     meta: evt.meta // to transport userId...   if not defined in cmd, it will defaultly use it from event
   };
-  
+
   saga.removeTimeout();
 
   saga.addCommandToSend(cmd);

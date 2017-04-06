@@ -479,6 +479,8 @@ Use this function to get all timeouted sagas.
 	    });
 
 	    saga.commit(function (err) {
+        // if you have registered the pm.onCommand handler it will be automatically executed,
+        // if you have not registered the pm.onCommand handler you need to publish and set the command to dispatched on your own!
 	    	cmds.forEach(function (cmd) {
 	    		// publish cmd...
 	    		// msgBus.send(cmd);
