@@ -1147,8 +1147,7 @@ describe('power management', function () {
 
                 pm.onCommand(function (cmd) {
                   expect(cmd.id).to.eql('newId');
-                  expect(cmd.payload.id).to.eql('newId');
-                  expect(cmd.payload.name).to.eql('newCommand');
+                  expect(cmd.name).to.eql('newCommand');
                 });
 
                 pm.getUndispatchedCommands(function (err, cmds) {
