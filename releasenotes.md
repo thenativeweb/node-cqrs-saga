@@ -1,3 +1,6 @@
+## [v1.7.2](https://github.com/adrai/node-cqrs-saga/compare/v1.7.1...v1.7.2)
+- optimize handling for commandRejected
+
 ## [v1.7.1](https://github.com/adrai/node-cqrs-saga/compare/v1.6.27...v1.7.1)
 - for getTimeoutedSagas handling: if the pm.onCommand handler is registered it will be automatically executed
 
