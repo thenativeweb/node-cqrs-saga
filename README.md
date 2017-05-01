@@ -57,7 +57,8 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	  // hint settings like: [eventstore](https://github.com/adrai/node-eventstore#provide-implementation-for-storage)
 	  revisionGuard: {
 	  	queueTimeout: 1000,                         // optional, timeout for non-handled events in the internal in-memory queue
-	  	queueTimeoutMaxLoops: 3                     // optional, maximal loop count for non-handled event in the internal in-memory queue
+	  	queueTimeoutMaxLoops: 3,                    // optional, maximal loop count for non-handled event in the internal in-memory queue
+      startRevisionNumber: 1,			                // optional, if defined the denormaizer waits for an event with that revision to be used as first event
 
 	  	type: 'redis',
 	  	host: 'localhost',                          // optional
