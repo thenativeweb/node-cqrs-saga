@@ -1,3 +1,6 @@
+## [v1.7.3](https://github.com/adrai/node-cqrs-saga/compare/v1.7.2...v1.7.3)
+- fix saga callback on retry [#39](https://github.com/adrai/node-cqrs-saga/pull/#39) thanks to [nanov](https://github.com/nanov)
+
 ## [v1.7.2](https://github.com/adrai/node-cqrs-saga/compare/v1.7.1...v1.7.2)
 - optimize handling for commandRejected
 
