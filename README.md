@@ -376,11 +376,11 @@ After the initialization you can request the saga information:
 
 	  // if you have multiple concurrent events that targets the same saga, you can catch it like this:
 	  if (saga.actionOnCommit === 'create') {
-	  	return this.retry(callback);
+	  	return this.retry();
 	  	// or
-	  	//return this.retry(100, callback); // retries to handle again in 0-100ms
+	  	//return this.retry(100); // retries to handle again in 0-100ms
 	  	// or
-	  	//return this.retry({ from: 500, to: 8000 }, callback); // retries to handle again in 500-8000ms
+	  	//return this.retry({ from: 500, to: 8000 }); // retries to handle again in 500-8000ms
 	  }
 
 	  saga.set('orderId', evt.aggregate.id);
