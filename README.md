@@ -533,6 +533,21 @@ Use setCommandToDispatched to mark a command as dispatched. (will remove it from
 	});
 
 
+## ES6 default exports
+Importing ES6 style default exports is supported for all definitions where you also use `module.exports`:
+```
+module.exports = defineSaga({...});
+```
+works as well as 
+```
+exports.default = defineSaga({...});
+```
+as well as (must be transpiled by babel or tsc to be runnable in node)
+```
+export default defineSaga({...});
+```
+Exports other than the default export are then ignored by this package's structure loader.
+
 [Release notes](https://github.com/adrai/node-cqrs-saga/blob/master/releasenotes.md)
 
 # License
