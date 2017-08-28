@@ -1,3 +1,6 @@
+## [v1.8.0](https://github.com/adrai/node-cqrs-saga/compare/v1.7.3...v1.8.0)
+- Support default exports [#40](https://github.com/adrai/node-cqrs-saga/pull/#40) thanks to [IRT-fbachmann](https://github.com/IRT-fbachmann)
+
 ## [v1.7.3](https://github.com/adrai/node-cqrs-saga/compare/v1.7.2...v1.7.3)
 - fix saga callback on retry [#39](https://github.com/adrai/node-cqrs-saga/pull/#39) thanks to [nanov](https://github.com/nanov)
 
