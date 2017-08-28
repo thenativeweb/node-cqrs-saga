@@ -536,23 +536,15 @@ Use setCommandToDispatched to mark a command as dispatched. (will remove it from
 ## ES6 default exports
 Importing ES6 style default exports is supported for all definitions where you also use `module.exports`:
 ```
-module.exports = defineContext({...});
+module.exports = defineSaga({...});
 ```
 works as well as 
 ```
-exports.default = defineContext({...});
+exports.default = defineSaga({...});
 ```
 as well as (must be transpiled by babel or tsc to be runnable in node)
 ```
-export default defineContext({...});
-```
-
-Also: 
-```
-exports.default = defineAggregate({...});
-exports.default = defineCommand({...});
-exports.default = defineEvent({...});
-// etc...
+export default defineSaga({...});
 ```
 Exports other than the default export are then ignored by this package's structure loader.
 
