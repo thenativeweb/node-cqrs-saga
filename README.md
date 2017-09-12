@@ -460,6 +460,24 @@ After the initialization you can request the saga information:
 	//.defineShouldHandle(function (evt, saga, callback) {
 	//  callback(null, true');
 	//});
+	
+Instead of using callback, Promises do also work:
+
+	module.exports = require('cqrs-saga').defineSaga({
+	  // optional, default is file name without extension
+	  name: 'orderCreated',
+
+	  // optional
+	  aggregate: 'order',
+
+	  // optional
+	  context: 'sale',
+
+	  // optional, default 0
+	  version: 1,
+	}, function (evt, saga) {
+		return Promise.resolve();
+	});
 
 
 # Persistence functions
