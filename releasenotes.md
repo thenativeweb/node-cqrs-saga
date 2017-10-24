@@ -1,3 +1,6 @@
+## [v1.9.0](https://github.com/adrai/node-cqrs-saga/compare/v1.8.0...v1.9.0)
+- optional pagination for getTimeoutedSagas and getUndispatchedCommands
+
 ## [v1.8.0](https://github.com/adrai/node-cqrs-saga/compare/v1.7.3...v1.8.0)
 - Support default exports [#40](https://github.com/adrai/node-cqrs-saga/pull/#40) thanks to [IRT-fbachmann](https://github.com/IRT-fbachmann)
 

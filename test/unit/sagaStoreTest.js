@@ -551,7 +551,38 @@ describe('sagaStore', function() {
                       expect(cmds[3].command.id).to.eql(cmds3[0].payload.id);
                       expect(cmds[3].command.data).to.eql(cmds3[0].payload.data);
 
-                      done();
+                      if (type === 'azuretable') return done();
+
+                      store.getUndispatchedCommands({ skip: 1, limit: 2 }, function (err, cmds) {
+                        expect(err).not.to.be.ok();
+                        expect(cmds).to.be.an('array');
+                        if (type === 'mongodb') {
+                          expect(cmds.length).to.eql(3);
+                        } else {
+                          expect(cmds.length).to.eql(2);
+                        }
+
+                        expect(cmds[0].sagaId).to.eql(saga2.id);
+                        expect(cmds[0].commandId).to.eql(cmds2[0].id);
+                        expect(cmds[0].commitStamp.getTime()).to.eql(saga2._commitStamp.getTime());
+                        expect(cmds[0].command.id).to.eql(cmds2[0].payload.id);
+                        expect(cmds[0].command.data).to.eql(cmds2[0].payload.data);
+                        expect(cmds[1].sagaId).to.eql(saga2.id);
+                        expect(cmds[1].commandId).to.eql(cmds2[1].id);
+                        expect(cmds[1].commitStamp.getTime()).to.eql(saga2._commitStamp.getTime());
+                        expect(cmds[1].command.id).to.eql(cmds2[1].payload.id);
+                        expect(cmds[1].command.data).to.eql(cmds2[1].payload.data);
+
+                        if (type === 'mongodb') {
+                          expect(cmds[2].sagaId).to.eql(saga3.id);
+                          expect(cmds[2].commandId).to.eql(cmds3[0].id);
+                          expect(cmds[2].commitStamp.getTime()).to.eql(saga3._commitStamp.getTime());
+                          expect(cmds[2].command.id).to.eql(cmds3[0].payload.id);
+                          expect(cmds[2].command.data).to.eql(cmds3[0].payload.data);
+                        }
+
+                        done();
+                      });
                     });
 
                   });
