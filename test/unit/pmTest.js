@@ -1132,7 +1132,24 @@ describe('power management', function () {
                         expect(cmd.commitStamp).to.be.ok();
                         expect(cmd.command.id).to.eql('newId');
                         expect(cmd.command.name).to.eql('newCommand');
-                        done();
+
+                        pm.getTimeoutedSagas(function (err, sagas) {
+                          expect(err).not.to.be.ok();
+                          expect(sagas).to.be.an('array');
+                          expect(sagas.length).to.eql(1);
+
+                          sagas[0].removeTimeout();
+                          sagas[0].commit(function (err) {
+                            expect(err).not.to.be.ok();
+                            pm.getTimeoutedSagas(function (err, sagas) {
+                              expect(err).not.to.be.ok();
+                              expect(sagas).to.be.an('array');
+                              expect(sagas.length).to.eql(0);
+                              done();
+                            });
+                          });
+                        });
+
                       });
                     });
                   });
@@ -1296,7 +1313,18 @@ describe('power management', function () {
                     expect(sagas[0].getTimeoutAt().getTime()).to.eql(saga2._timeoutAt.getTime());
                     expect(sagas[0].get('data')).to.eql(saga2.data);
 
-                    done();
+                    sagas[0].removeTimeout();
+                    sagas[0].commit(function (err) {
+                      expect(err).not.to.be.ok();
+
+                      pm.getOlderSagas(new Date(2014, 3, 3), function (err, sagas) {
+                        expect(err).not.to.be.ok();
+                        expect(sagas).to.be.an('array');
+                        expect(sagas.length).to.eql(0);
+
+                        done();
+                      });
+                    });
                   });
                 });
               });
