@@ -1,3 +1,6 @@
+## [v1.10.0](https://github.com/adrai/node-cqrs-saga/compare/v1.9.1...v1.10.0)
+- compatibility with new mongodb version (3.x)
+
 ## [v1.9.1](https://github.com/adrai/node-cqrs-saga/compare/v1.9.0...v1.9.1)
 - add possibility to call removeTimeout after getTimeoutSagas and getOlderSagas [#42](https://github.com/adrai/node-cqrs-saga/issues/#42) thanks to [edro](https://github.com/edro)
 

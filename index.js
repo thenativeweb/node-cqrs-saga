@@ -1,5 +1,3 @@
-'use strict';
-
 var ProcessManagement = require('./lib/pm'),
   _ = require('lodash'),
   fs = require('fs'),
