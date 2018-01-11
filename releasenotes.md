@@ -1,4 +1,4 @@
-## [v1.10.0](https://github.com/adrai/node-cqrs-saga/compare/v1.9.1...v1.10.0)
+## [v1.10.1](https://github.com/adrai/node-cqrs-saga/compare/v1.9.1...v1.10.1)
 - compatibility with new mongodb version (3.x)
 
 ## [v1.9.1](https://github.com/adrai/node-cqrs-saga/compare/v1.9.0...v1.9.1)
