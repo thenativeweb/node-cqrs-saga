@@ -205,6 +205,33 @@ you can get the last guarded event:
 
 	});
 
+## Using custom structure loader function
+The built-in structure loader can be replaced with one adapted to your needs.
+To do that, you need to include a loading method in the options object passed to the domain constructor.
+
+	// options will contain sagaPath as well as the as well as a definition object containing all the constructors of the saga components  ( Saga )
+	function structureLoader(options) {
+
+		return [
+			new options.definitions.Saga({
+				name: 'myEvt'
+			}, function (evt, saga, callback) {
+				// handle
+			}),
+			new options.definitions.Saga({
+				name: 'myOtherEvt'
+			}, function (evt, saga, callback) {
+				// handle
+			}),
+		];
+		// or more probably
+		return myExternalLoader(options.sagaPath, options.definitions);
+	}
+
+	var pm = require('cqrs-saga')({
+	  sagaPath: '/path/to/my/files',
+		structureLoader: structureLoader
+	});
 
 ## Initialization
 

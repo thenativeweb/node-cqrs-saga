@@ -36,6 +36,7 @@ describe('power management', function () {
         var pm = api({ sagaPath: __dirname });
         expect(pm).to.be.a('object');
         expect(pm.on).to.be.a('function');
+        expect(pm.structureLoader).to.be.a('function');        
         expect(pm.sagaStore).to.be.an('object');
         expect(pm.sagaStore.on).to.be.a('function');
         expect(pm.revisionGuardStore).to.be.an('object');
@@ -58,11 +59,65 @@ describe('power management', function () {
         expect(pm.options.retryOnConcurrencyTimeout).to.eql(800);
         expect(pm.options.revisionGuard.queueTimeout).to.eql(1000);
         expect(pm.options.revisionGuard.queueTimeoutMaxLoops).to.eql(3);
-
       });
 
     });
 
+    describe('with custom "structureLoader" method', function () {
+
+      describe('creating an object of the wrong interface', function () {
+
+        it('it should throw an error', function () {
+
+          expect(function () {
+            api({
+              sagaPath: __dirname,
+              structureLoader: {
+              },
+            })
+          }).to.throwError('/structureLoader/');
+
+        });
+      });
+
+      describe('creating an object of the right interface', function () {
+
+        it('it should return as expected', function () {
+          var pm = api({ 
+            sagaPath: __dirname,
+            structureLoader: function() {
+            }
+          });
+
+          expect(pm).to.be.a('object');
+          expect(pm.on).to.be.a('function');
+          expect(pm.structureLoader).to.be.a('function');        
+          expect(pm.sagaStore).to.be.an('object');
+          expect(pm.sagaStore.on).to.be.a('function');
+          expect(pm.revisionGuardStore).to.be.an('object');
+          expect(pm.revisionGuardStore.on).to.be.a('function');
+          expect(pm.defineCommand).to.be.a('function');
+          expect(pm.defineEvent).to.be.a('function');
+          expect(pm.idGenerator).to.be.a('function');
+          expect(pm.onCommand).to.be.a('function');
+          expect(pm.onEventMissing).to.be.a('function');
+          expect(pm.init).to.be.a('function');
+          expect(pm.handle).to.be.a('function');
+          expect(pm.getLastEvent).to.be.a('function');
+  
+          expect(pm.getTimeoutedSagas).to.be.a('function');
+          expect(pm.getOlderSagas).to.be.a('function');
+          expect(pm.getUndispatchedCommands).to.be.a('function');
+          expect(pm.setCommandToDispatched).to.be.a('function');
+          expect(pm.removeSaga).to.be.a('function');
+  
+          expect(pm.options.retryOnConcurrencyTimeout).to.eql(800);
+          expect(pm.options.revisionGuard.queueTimeout).to.eql(1000);
+          expect(pm.options.revisionGuard.queueTimeoutMaxLoops).to.eql(3);
+        });
+      });
+    });
+    
     describe('defining an id generator function', function() {
 
       var pm;
@@ -383,6 +438,31 @@ describe('power management', function () {
         });
 
       });
+
+      describe('with custom structureLoader', function() {
+        it('it should return as expected', function(done) {
+          pm = api({
+            sagaPath: __dirname,
+            denormalizerPath: __dirname,
+            structureLoader: function(options) {
+              return [
+                new options.definitions.Saga({
+                  name: 'mySaga'
+                }, function() {})
+              ]
+            },
+          });
+    
+          pm.init(function() {
+            var sagas = pm.getInfo().sagas;
+            expect(sagas.length).to.eql(1);
+            expect(sagas[0].name).to.eql('mySaga');
+            done();
+          });
+                
+        });
+      });
+            
 
     });
 
