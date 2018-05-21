@@ -1,3 +1,6 @@
+## [v1.11.0](https://github.com/adrai/node-cqrs-saga/compare/v1.10.2...v1.11.0)
+- add option to add custom structureLoader implementation
+
 ## [v1.10.2](https://github.com/adrai/node-cqrs-saga/compare/v1.10.1...v1.10.2)
 - remove deprecated option max_attempts from redis options
 
