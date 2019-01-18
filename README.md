@@ -479,7 +479,16 @@ After the initialization you can request the saga information:
 	//  callback(null, 'newId');
 	//});
 	//
-	// optional define a function that checks if an event should be handled
+	// optional define a function that checks if an event should be handled ( before saga is loaded )
+	//.defineShouldHandleEvent(function (evt) {
+	//  return true;
+	//});
+	// or
+	//.defineShouldHandleEvent(function (evt, callback) {
+	//  callback(null, true');
+	//});
+	//
+	// optional define a function that checks if an event should be handled ( after saga is loaded )
 	//.defineShouldHandle(function (evt, saga) {
 	//  return true;
 	//});
