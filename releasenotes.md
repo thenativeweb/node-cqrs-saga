@@ -1,3 +1,7 @@
+## [v1.11.1](https://github.com/adrai/node-cqrs-saga/compare/v1.11.0...v1.11.1)
+- replace deprecated mongo methods ( ensureIndex, insert, remove, update )
+- add optional shouldHandleEvent function, to filter events before loading saga
+
 ## [v1.11.0](https://github.com/adrai/node-cqrs-saga/compare/v1.10.2...v1.11.0)
 - add option to add custom structureLoader implementation
 
