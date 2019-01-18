@@ -795,6 +795,68 @@ describe('saga definition', function () {
 
         });
 
+        describe('that defines shouldHandleEvent', function () {
+
+          describe('not matching', function () {
+
+            it('it should work as expected', function (done) {
+              var sagaFn = function () {
+                expect(this.retry).to.be.a('function');
+              };
+              saga = api.defineSaga({
+                name: 'eventName',
+                version: 3,
+                payload: 'p',
+              }, sagaFn).defineShouldHandleEvent(function (evt) {                
+                return evt.match;
+              });
+
+              saga.useSagaStore(sagaStore);
+
+              saga.handle({ match: false }, function (err, sagaModel) {
+                expect(err).not.to.be.ok();
+                expect(sagaModel).not.to.be.ok();
+                done();
+              });
+            });
+
+          });
+
+          describe('matching', function () {
+
+            it('it should work as expected', function (done) {
+
+              var fnCalled = false;
+              var sagaId = null;
+              var sagaFn = function (e, s, clb) {
+                expect(this.retry).to.be.a('function');
+                expect(e.aggId).to.eql('123');
+                expect(s.id).to.be.a('string');
+                sagaId = s.id;
+                fnCalled = true;
+                clb(null);
+              };
+              saga = api.defineSaga({
+                name: 'eventName',
+                version: 3,
+              }, sagaFn).defineShouldHandleEvent(function (evt) {
+                return evt.aggId === '123';
+              })
+
+              saga.useSagaStore(sagaStore);
+
+              saga.handle({ aggId: '123' }, function (err, sagaModel) {
+                expect(err).not.to.be.ok();
+                expect(sagaModel.id).to.eql(sagaId);
+                expect(fnCalled).to.eql(true);
+                done();
+              });
+            });
+
+          });
+
+        });
+
       });
 
     });
