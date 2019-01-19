@@ -1,3 +1,6 @@
+## [v1.11.11](https://github.com/adrai/node-cqrs-saga/compare/v1.11.1...v1.11.11)
+- remove debug forgotten console messages
+
 ## [v1.11.1](https://github.com/adrai/node-cqrs-saga/compare/v1.11.0...v1.11.1)
 - replace deprecated mongo methods ( ensureIndex, insert, remove, update )
 - add optional shouldHandleEvent function, to filter events before loading saga
