@@ -1,3 +1,6 @@
+## [v1.11.12](https://github.com/adrai/node-cqrs-saga/compare/v1.11.11...v1.11.12)
+- replace additional deprecated mongo methods
+
 ## [v1.11.11](https://github.com/adrai/node-cqrs-saga/compare/v1.11.1...v1.11.11)
 - remove debug forgotten console messages
 
