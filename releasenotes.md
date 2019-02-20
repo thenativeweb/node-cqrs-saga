@@ -1,3 +1,6 @@
+## [v1.11.13](https://github.com/adrai/node-cqrs-saga/compare/v1.11.12...v1.11.13)
+- add option not to use the revisionGuardStore
+
 ## [v1.11.12](https://github.com/adrai/node-cqrs-saga/compare/v1.11.11...v1.11.12)
 - replace additional deprecated mongo methods
 
