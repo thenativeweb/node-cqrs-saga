@@ -64,10 +64,12 @@ It can be very useful as domain component if you work with (d)ddd, cqrs, eventde
 	  	host: 'localhost',                          // optional
 	  	port: 6379,                                 // optional
 	  	db: 0,                                      // optional
-	  	prefix: 'readmodel_revision',               // optional
+	  	prefix: 'saga_revision',               			// optional
 	  	timeout: 10000                              // optional
-	  	// password: 'secret'                          // optional
+	  	// password: 'secret'                       // optional
 	  }
+		// or, if you don't like to guard revisions ( managed externally ? )
+		revisionGuard: false // note has to be set explicitly false
 	});
 
 
