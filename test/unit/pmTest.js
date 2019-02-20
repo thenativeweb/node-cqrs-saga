@@ -924,6 +924,233 @@ describe('power management', function () {
 
       });
 
+      describe('working with revisions but no guard store', function () {
+
+        var pm;
+
+        beforeEach(function () {
+          pm = api({sagaPath: __dirname, revisionGuard: false });
+          pm.defineCommand({
+            id: 'i',
+            meta: 'm'
+          });
+          pm.defineEvent({
+            name: 'n',
+            context: 'c',
+            aggregate: 'a',
+            revision: 'r',
+            version: 'v',
+            meta: 'm'
+          });
+        });
+
+        describe('with a callback', function () {
+
+          it('it should work as expected', function (done) {
+
+            var evt = {
+              i: 'evtId',
+              n: 'evtName',
+              ai: 'aggregateId',
+              c: 'context',
+              p: 'payload',
+              r: 'revision',
+              v: 'version',
+              m: 'meta'
+            };
+            var dispatchCalled = false;
+            var sagastoreCalled = [];
+            var onCommandCalled = [];
+
+            pm.onCommand(function (c) {
+              onCommandCalled.push(c);
+            });
+
+            pm.init(function (err) {
+              expect(err).not.to.be.ok();
+
+              pm.eventDispatcher.dispatch = function (e, clb) {
+                dispatchCalled = true;
+                var s1Ret = [{i: '1'}, {i: '2'}];
+                var s2Ret = [{i: '3'}];
+                clb(null, [{
+                  id: 's1',
+                  getUndispatchedCommands: function () {
+                    return [].concat(s1Ret);
+                  },
+                  removeUnsentCommand: function (c) {
+                    s1Ret.splice(s1Ret.indexOf(c), 1);
+                  },
+                  toJSON: function () {
+                    return {id: 's1'};
+                  },
+                  isDestroyed: function () {
+                    return false;
+                  }
+                },
+                  {
+                    id: 's2',
+                    getUndispatchedCommands: function () {
+                      return [].concat(s2Ret);
+                    },
+                    removeUnsentCommand: function (c) {
+                      s2Ret.splice(s2Ret.indexOf(c), 1);
+                    },
+                    toJSON: function () {
+                      return {id: 's2'};
+                    },
+                    isDestroyed: function () {
+                      return false;
+                    }
+                  }]);
+              };
+
+              pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
+                sagastoreCalled.push({sagaId: sId, commandId: cId});
+                clb(null);
+              };
+
+              var guardCalled = false;
+              var guardDoneCalled = false;
+              pm.revisionGuard = {
+                guard: function (evt, clb) {
+                  guardCalled = true;
+                  clb(null, function (c) {
+                    guardDoneCalled = true;
+                    c(null);
+                  });
+                }
+              };
+
+              pm.handle(evt, function (err, cmds, sagaModels) {
+                expect(err).not.to.be.ok();
+                expect(dispatchCalled).to.eql(true);
+                expect(sagastoreCalled.length).to.eql(3);
+                expect(sagastoreCalled[0].sagaId).to.eql('s1');
+                expect(sagastoreCalled[0].commandId).to.eql('1');
+                expect(sagastoreCalled[1].sagaId).to.eql('s1');
+                expect(sagastoreCalled[1].commandId).to.eql('2');
+                expect(sagastoreCalled[2].sagaId).to.eql('s2');
+                expect(sagastoreCalled[2].commandId).to.eql('3');
+                expect(onCommandCalled.length).to.eql(3);
+                expect(onCommandCalled[0].i).to.eql('1');
+                expect(onCommandCalled[1].i).to.eql('2');
+                expect(onCommandCalled[2].i).to.eql('3');
+                expect(cmds.length).to.eql(3);
+                expect(cmds[0].i).to.eql('1');
+                expect(cmds[1].i).to.eql('2');
+                expect(cmds[2].i).to.eql('3');
+                expect(sagaModels.length).to.eql(2);
+                expect(sagaModels[0].id).to.eql('s1');
+                expect(sagaModels[1].id).to.eql('s2');
+
+                expect(guardCalled).to.eql(false);
+                expect(guardDoneCalled).to.eql(false);
+
+                done();
+              });
+            });
+
+          });
+
+        });
+
+        describe('without a callback', function () {
+
+          it('it should work as expected', function (done) {
+
+            var evt = {
+              i: 'evtId',
+              n: 'evtName',
+              ai: 'aggregateId',
+              c: 'context',
+              p: 'payload',
+              r: 'revision',
+              v: 'version',
+              m: 'meta'
+            };
+            var dispatchCalled = false;
+            var sagastoreCalled = [];
+            var onCommandCalled = [];
+
+            pm.onCommand(function (c) {
+              onCommandCalled.push(c);
+            });
+
+            pm.init(function (err) {
+              expect(err).not.to.be.ok();
+
+              pm.eventDispatcher.dispatch = function (e, clb) {
+                dispatchCalled = true;
+                var s1Ret = [{i: '1'}, {i: '2'}];
+                var s2Ret = [{i: '3'}];
+                clb(null, [{
+                  id: 's1',
+                  getUndispatchedCommands: function () {
+                    return [].concat(s1Ret);
+                  },
+                  removeUnsentCommand: function (c) {
+                    s1Ret.splice(s1Ret.indexOf(c), 1);
+                  }
+                },
+                  {
+                    id: 's2',
+                    getUndispatchedCommands: function () {
+                      return [].concat(s2Ret);
+                    },
+                    removeUnsentCommand: function (c) {
+                      s2Ret.splice(s2Ret.indexOf(c), 1);
+                    }
+                  }]);
+              };
+
+              pm.sagaStore.setCommandToDispatched = function (cId, sId, clb) {
+                sagastoreCalled.push({sagaId: sId, commandId: cId});
+                clb(null);
+
+                if (sagastoreCalled.length === 3) {
+                  expect(dispatchCalled).to.eql(true);
+                  expect(sagastoreCalled.length).to.eql(3);
+                  expect(sagastoreCalled[0].sagaId).to.eql('s1');
+                  expect(sagastoreCalled[0].commandId).to.eql('1');
+                  expect(sagastoreCalled[1].sagaId).to.eql('s1');
+                  expect(sagastoreCalled[1].commandId).to.eql('2');
+                  expect(sagastoreCalled[2].sagaId).to.eql('s2');
+                  expect(sagastoreCalled[2].commandId).to.eql('3');
+                  expect(onCommandCalled.length).to.eql(3);
+                  expect(onCommandCalled[0].i).to.eql('1');
+                  expect(onCommandCalled[1].i).to.eql('2');
+                  expect(onCommandCalled[2].i).to.eql('3');
+
+                  expect(guardCalled).to.eql(false);
+                  expect(guardDoneCalled).to.eql(false);
+
+                  done();
+                }
+              };
+
+              var guardCalled = false;
+              var guardDoneCalled = false;
+              pm.revisionGuard = {
+                guard: function (evt, clb) {
+                  guardCalled = true;
+                  clb(null, function (c) {
+                    guardDoneCalled = true;
+                    c(null);
+                  });
+                }
+              };
+
+              pm.handle(evt);
+            });
+
+          });
+
+        });
+
+      });
+
+
     });
 
     describe('having nothing in the saga store', function () {
